@@ -1,0 +1,6 @@
+Current list of things that have not been handled -
+
+1. If the user denies permission for switching discovery mode on
+2. If the same device goes off discoverable mode and comes back on during scanning, gets added to list twice.
+3. Make an onDestroy() by overriding, for unregistering the broadcast receivers in MainActivity.java
+4. For checking duplicate devices discovered, brute force method is used. Optimize.

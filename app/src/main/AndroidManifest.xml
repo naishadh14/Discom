@@ -17,6 +17,8 @@
         <activity android:name=".PairedDevices"
             android:parentActivityName=".ModifyBluetooth">
         </activity>
+        <activity android:name=".ConnectDevices">
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

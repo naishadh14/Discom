@@ -7,16 +7,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Parcelable;
+import android.text.method.ScrollingMovementMethod;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity {
+
+    List<DeviceInfo> discovered_devices;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        this.discovered_devices = new ArrayList<DeviceInfo>();
         TextView text = (TextView) findViewById(R.id.textView3);
+        text.setMovementMethod(new ScrollingMovementMethod());
+        text.append("\n");
+
+        TextView text2 = (TextView) findViewById(R.id.textView4);
+        text2.append("\n");
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
@@ -27,33 +44,14 @@ public class MainActivity extends AppCompatActivity {
         IntentFilter discovery_state_filter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         registerReceiver(discovery_state_receiver, discovery_state_filter);
 
-        /*
-        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        registerReceiver(receiver, filter);
+        IntentFilter discovery_status_start = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        registerReceiver(discovery_starting, discovery_status_start);
 
-        int REQUEST_ID = 1;
-        ActivityCompat.requestPermissions(this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.BLUETOOTH,
-                Manifest.permission.BLUETOOTH_ADMIN},
-                REQUEST_ID);
+        IntentFilter discovery_status_finish = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        registerReceiver(discovery_ending, discovery_status_finish);
 
-        bluetoothAdapter.disable();
-        bluetoothAdapter.enable();
-        if(bluetoothAdapter.isDiscovering()) {
-            bluetoothAdapter.cancelDiscovery();
-        }
-        int state = bluetoothAdapter.getState();
-        text.append(Integer.toString(state));
-        boolean flag = bluetoothAdapter.startDiscovery();
-        if(!flag) {
-            text.append("Could not start discovery!\n");
-            return;
-        }
-
-        text.append("Following Bluetooth Devices Found -\n");
-        */
+        IntentFilter device_found = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(device_found_receiver, device_found);
     }
 
     // Create a BroadcastReceiver for ACTION_STATE_CHANGED.
@@ -69,17 +67,11 @@ public class MainActivity extends AppCompatActivity {
                     text.append("Adapter is off.\n");
                 else if(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)
                     == BluetoothAdapter.STATE_ON) {
-                    text.append("Adapter is on.\n");
+                    //text.append("Adapter is on.\n");
                     int mode = checkScanMode();
                     if(mode == 0 || mode == 1)
                         requestDiscovery();
                 }
-                else if(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)
-                        == BluetoothAdapter.STATE_TURNING_OFF)
-                    text.append("Adapter is turning off.\n");
-                else if(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)
-                        == BluetoothAdapter.STATE_TURNING_ON)
-                    text.append("Adapter is turning on.\n");
             }
         }
     };
@@ -98,15 +90,38 @@ public class MainActivity extends AppCompatActivity {
                     text.append("Scan mode connectable.\n");
                 else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
                     text.append("Scan mode connectable and discoverable.\n");
-                    startDiscovery();
                 }
+            }
+        }
+    };
+
+    private final BroadcastReceiver discovery_starting = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                // SCAN MODE HAS CHANGED. GET NEW SCAN MODE.
+                TextView text = (TextView) findViewById(R.id.textView3);
+                text.append("Discovery process has started.\n");
+                makeButtonInvisible();
+            }
+        }
+    };
+
+    private final BroadcastReceiver discovery_ending = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                // SCAN MODE HAS CHANGED. GET NEW SCAN MODE.
+                TextView text = (TextView) findViewById(R.id.textView3);
+                text.append("Discovery process has finished.\n");
+                makeButtonVisible();
             }
         }
     };
 
 
     // Create a BroadcastReceiver for ACTION_FOUND.
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver device_found_receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
@@ -116,17 +131,65 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
-                text.append(deviceName);
-                text.append(deviceHardwareAddress);
+                createDiscoveryList(deviceName, deviceHardwareAddress);
             }
         }
     };
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        // Don't forget to unregister the ACTION_FOUND receiver.
-        unregisterReceiver(receiver);
+    //Make a onDestroy
+
+    public void makeButtonVisible() {
+        Button button = (Button) findViewById(R.id.button3);
+        button.setVisibility(View.VISIBLE);
+    }
+
+    public void makeButtonInvisible() {
+        Button button = (Button) findViewById(R.id.button3);
+        button.setVisibility(View.GONE);
+    }
+
+    public void NavigateToConnectDevices(View view) {
+        Intent intent = new Intent(this, ConnectDevices.class);
+        intent.putExtra("DeviceList", (Serializable) this.discovered_devices);
+        startActivity(intent);
+    }
+
+    public void createDiscoveryList(String name, String address) {
+        DeviceInfo device = new DeviceInfo();
+        device.setName(name);
+        device.setAddress(address);
+        addDeviceToList(device);
+        refreshList();
+    }
+
+    public boolean checkDuplicate(DeviceInfo device) {
+        int len = this.discovered_devices.size();
+        for(int i = 0; i < len; i++) {
+            if(this.discovered_devices.get(i).isDuplicate(device))
+                return true;
+        }
+        return false;
+    }
+
+    public void addDeviceToList(DeviceInfo device) {
+        if(!checkDuplicate(device))
+            this.discovered_devices.add(device);
+    }
+
+    public void refreshList() {
+        TextView text = (TextView) findViewById(R.id.textView4);
+        text.setText("");
+        int len = this.discovered_devices.size();
+        DeviceInfo device;
+        for(int i = 0; i < len; i++) {
+            device = discovered_devices.get(i);
+            text.append("Device: ");
+            text.append(device.name);
+            text.append("\n");
+            text.append("Address: ");
+            text.append(device.address);
+            text.append("\n");
+        }
     }
 
     public void requestDiscovery() {
@@ -154,13 +217,23 @@ public class MainActivity extends AppCompatActivity {
         return -1;
     }
 
-    public void startDiscovery() {
+    public void startDiscovery(View view) {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         TextView text = (TextView)findViewById(R.id.textView3);
+        if(bluetoothAdapter.isDiscovering())
+            bluetoothAdapter.cancelDiscovery();
         boolean flag = bluetoothAdapter.startDiscovery();
-        if(flag)
-            text.append("Discovery started!\n");
-        else
+        if(flag) {
+            text.append("Discovery starting.\n");
+        }
+        else {
             text.append("Could not start discovery!\n");
+        }
     }
+
+    public void cancelDiscovery(View view) {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothAdapter.cancelDiscovery();
+    }
+
 }
