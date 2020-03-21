@@ -7,11 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.text.method.ScrollingMovementMethod;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -21,13 +21,13 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    List<DeviceInfo> discovered_devices;
+    List<BluetoothDevice> discoveredDevices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        this.discovered_devices = new ArrayList<DeviceInfo>();
+        this.discoveredDevices = new ArrayList<BluetoothDevice>();
         TextView text = (TextView) findViewById(R.id.textView3);
         text.setMovementMethod(new ScrollingMovementMethod());
         text.append("\n");
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 String deviceName = device.getName();
                 String deviceHardwareAddress = device.getAddress(); // MAC address
-                createDiscoveryList(deviceName, deviceHardwareAddress);
+                createDiscoveryList(device);
             }
         }
     };
@@ -149,46 +149,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void NavigateToConnectDevices(View view) {
+/*
+        if(this.discoveredDevices.size() == 0) {
+            Toast toast = Toast.makeText(getApplicationContext(), "No devices found!", Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+*/
         Intent intent = new Intent(this, ConnectDevices.class);
-        intent.putExtra("DeviceList", (Serializable) this.discovered_devices);
+        intent.putExtra("DeviceList", (Serializable) this.discoveredDevices);
         startActivity(intent);
     }
 
-    public void createDiscoveryList(String name, String address) {
-        DeviceInfo device = new DeviceInfo();
-        device.setName(name);
-        device.setAddress(address);
+    public void createDiscoveryList(BluetoothDevice device) {
         addDeviceToList(device);
         refreshList();
     }
 
-    public boolean checkDuplicate(DeviceInfo device) {
-        int len = this.discovered_devices.size();
+    public boolean checkDuplicate(BluetoothDevice device) {
+        int len = this.discoveredDevices.size();
         for(int i = 0; i < len; i++) {
-            if(this.discovered_devices.get(i).isDuplicate(device))
+            if(this.discoveredDevices.get(i).equals(device))
                 return true;
         }
         return false;
     }
 
-    public void addDeviceToList(DeviceInfo device) {
+    public void addDeviceToList(BluetoothDevice device) {
         if(!checkDuplicate(device))
-            this.discovered_devices.add(device);
+            this.discoveredDevices.add(device);
     }
 
     public void refreshList() {
         TextView text = (TextView) findViewById(R.id.textView4);
         text.setText("");
-        int len = this.discovered_devices.size();
-        DeviceInfo device;
+        int len = this.discoveredDevices.size();
+        BluetoothDevice device;
         for(int i = 0; i < len; i++) {
-            device = discovered_devices.get(i);
+            device = discoveredDevices.get(i);
             text.append("Device: ");
-            text.append(device.name);
+            text.append(device.getName());
             text.append("\n");
             text.append("Address: ");
-            text.append(device.address);
-            text.append("\n");
+            text.append(device.getAddress());
+            text.append("\n\n");
         }
     }
 
