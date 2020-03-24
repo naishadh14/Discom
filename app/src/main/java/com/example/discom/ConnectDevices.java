@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 public class ConnectDevices extends AppCompatActivity {
 
-    private static final int GETTING_ADAPTER = 2487;
     ArrayList<BluetoothDevice> discoveredDevices;
 
     @Override
@@ -53,24 +52,92 @@ public class ConnectDevices extends AppCompatActivity {
 
     public void startClient(View view) {
         int len = this.discoveredDevices.size();
+        final TextView text = (TextView)findViewById(R.id.textView6);
         for(int i = 0; i < len; i++) {
-            BluetoothClient bluetoothClient = new BluetoothClient(this.discoveredDevices.get(i));
+            Handler clientHandler = new Handler(Looper.getMainLooper()) {
+              @Override
+              public void handleMessage(Message msg) {
+                  //handle cases
+                  switch(msg.what) {
+                      case Constants.CLIENT_CREATING_CHANNEL:
+                          text.append(Constants.CLIENT_CREATING_CHANNEL_TEXT);
+                          text.append("\n");
+                          break;
+                      case Constants.CLIENT_CREATING_CHANNEL_FAIL:
+                          text.append(Constants.CLIENT_CREATING_CHANNEL_FAIL_TEXT);
+                          text.append("\n");
+                          break;
+                      case Constants.CLIENT_ATTEMPTING_CONNECTION:
+                          text.append(Constants.CLIENT_ATTEMPTING_CONNECTION_TEXT);
+                          text.append("\n");
+                          break;
+                      case Constants.CLIENT_CONNECTED:
+                          text.append(Constants.CLIENT_CONNECTED_TEXT);
+                          text.append("\n");
+                          break;
+                      case Constants.CLIENT_CONNECTION_FAIL:
+                          text.append(Constants.CLIENT_CONNECTION_FAIL_TEXT);
+                          text.append("\n");
+                          break;
+                      case Constants.CLIENT_SOCKET_CLOSE_FAIL:
+                          text.append(Constants.CLIENT_SOCKET_CLOSE_FAIL_TEXT);
+                          text.append("\n");
+                          break;
+                      case Constants.CLIENT_CLOSING_SOCKET:
+                          text.append(Constants.CLIENT_CLOSING_SOCKET_TEXT);
+                          text.append("\n");
+                          break;
+                  }
+              }
+            };
+            BluetoothClient bluetoothClient = new BluetoothClient(this.discoveredDevices.get(i), clientHandler);
             bluetoothClient.start();
         }
     }
 
     public void startServer() {
         final TextView text = (TextView)findViewById(R.id.textView6);
-        Handler handler = new Handler(Looper.getMainLooper()) {
+        Handler serverHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 //handle cases
-                if(msg.what == GETTING_ADAPTER) {
-                    text.append("Server: Getting adapter");
+                switch(msg.what) {
+                    case Constants.SERVER_GETTING_ADAPTER:
+                        text.append(Constants.SERVER_GETTING_ADAPTER_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_CREATING_CHANNEL:
+                        text.append(Constants.SERVER_CREATING_CHANNEL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_CREATING_CHANNEL_FAIL:
+                        text.append(Constants.SERVER_CREATING_CHANNEL_FAIL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_WAITING_DEVICE:
+                        text.append(Constants.SERVER_WAITING_DEVICE_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_ACCEPT_FAIL:
+                        text.append(Constants.SERVER_ACCEPT_FAIL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_DEVICE_CONNECTED:
+                        text.append(Constants.SERVER_DEVICE_CONNECTED_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_SOCKET_CLOSED:
+                        text.append(Constants.SERVER_SOCKET_CLOSED_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_SOCKET_CLOSE_FAIL:
+                        text.append(Constants.SERVER_SOCKET_CLOSE_FAIL_TEXT);
+                        text.append("\n");
+                        break;
                 }
             }
         };
-        BluetoothServer bluetoothServer = new BluetoothServer(handler);
+        BluetoothServer bluetoothServer = new BluetoothServer(serverHandler);
         bluetoothServer.start();
     }
 

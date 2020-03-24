@@ -5,32 +5,26 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 
 import java.io.IOException;
 import java.util.UUID;
 
 public class BluetoothServer extends Thread {
     private BluetoothServerSocket bluetoothServer = null;
-    private static final String MY_UUID_STRING = Constants.MY_UUID_STRING;
-    private static final String CHANNEL_NAME = Constants.CHANNEL_1;
-    private static final String TAG = Constants.TAG;
-    private static final int GETTING_ADAPTER = Constants.GETTING_ADAPTER;
-    Handler handler;
+    private Handler handler;
 
     public BluetoothServer(Handler handler) {
-        UUID uuid = UUID.fromString(MY_UUID_STRING);
+        UUID uuid = UUID.fromString(Constants.MY_UUID_STRING);
         BluetoothServerSocket tmp = null;
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.handler = handler;
-        sendMessageUp(GETTING_ADAPTER);
-        Log.e(TAG, "Server: Getting adapter");
+        sendMessageUp(Constants.SERVER_GETTING_ADAPTER);
         try {
-            tmp = bluetoothAdapter.listenUsingRfcommWithServiceRecord(CHANNEL_NAME, uuid);
-            Log.e(TAG, "Server: Created RFCOMM channel");
+            tmp = bluetoothAdapter.listenUsingRfcommWithServiceRecord(Constants.CHANNEL_1, uuid);
+            sendMessageUp(Constants.SERVER_CREATING_CHANNEL);
             bluetoothServer = tmp;
         } catch (IOException e) {
-            Log.e(TAG, "Server: Could not create RFCOMM channel", e);
+            sendMessageUp(Constants.SERVER_CREATING_CHANNEL_FAIL);
         }
     }
 
@@ -38,21 +32,21 @@ public class BluetoothServer extends Thread {
         BluetoothSocket socket = null;
         while(true) {
             try {
-                Log.e(TAG, "Server: Waiting for device");
+                sendMessageUp(Constants.SERVER_WAITING_DEVICE);
                 socket = bluetoothServer.accept();
             } catch (IOException e) {
-                Log.e(TAG, "Server: Socket's accept() method failed", e);
+                sendMessageUp(Constants.SERVER_ACCEPT_FAIL);
                 break;
             }
             if(socket != null) {
                 //manage socket in separate thread
-                Log.e(TAG, "Server: Device connected");
+                sendMessageUp(Constants.SERVER_DEVICE_CONNECTED);
                 //close the socket, since only one connection per socket
                 try {
-                    Log.e(TAG, "Server: Attempting to close socket, since connection already found");
                     bluetoothServer.close();
+                    sendMessageUp(Constants.SERVER_SOCKET_CLOSED);
                 } catch (IOException e) {
-                    Log.e(TAG, "Server: Could not close socket, but connection found", e);
+                    sendMessageUp(Constants.SERVER_SOCKET_CLOSE_FAIL);
                 }
                 break;
             }
@@ -63,7 +57,7 @@ public class BluetoothServer extends Thread {
         try {
             bluetoothServer.close();
         } catch (IOException e) {
-            Log.e(TAG, "Could not close the connect socket", e);
+            sendMessageUp(Constants.SERVER_SOCKET_CLOSE_FAIL);
         }
     }
 
