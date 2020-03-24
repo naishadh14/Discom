@@ -223,6 +223,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void startDiscovery(View view) {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        this.discoveredDevices.clear();
+        refreshList();
         TextView text = (TextView)findViewById(R.id.textView3);
         if(bluetoothAdapter.isDiscovering())
             bluetoothAdapter.cancelDiscovery();

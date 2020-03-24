@@ -22,9 +22,9 @@ public class BluetoothClient extends Thread {
         try {
             tmp = device.createRfcommSocketToServiceRecord(uuid);
             bluetoothSocket = tmp;
-            Log.e(TAG, "RFCOMM Client channel created");
+            Log.e(TAG, "Client: RFCOMM channel created");
         } catch (IOException e) {
-            Log.e(TAG, "Socket's create() method failed", e);
+            Log.e(TAG, "Client: Could not create RFCOMM channel", e);
         }
     }
 
@@ -33,13 +33,15 @@ public class BluetoothClient extends Thread {
         bluetoothAdapter.cancelDiscovery();
 
         try {
+            Log.e(TAG, "Client: Attempting to connect to device");
             bluetoothSocket.connect();
+            Log.e(TAG, "Client: Connected to device!");
         } catch (IOException e) {
-            Log.e(TAG, "Could not connect", e);
+            Log.e(TAG, "Client: Could not connect", e);
             try {
                 bluetoothSocket.close();
             } catch (IOException ex) {
-                Log.e(TAG, "Could not close the client socket", e);
+                Log.e(TAG, "Client: Could not close the socket after connection fail", e);
             }
             return;
         }
@@ -49,6 +51,7 @@ public class BluetoothClient extends Thread {
     public void cancel() {
         try {
             bluetoothSocket.close();
+            Log.e(TAG, "Closing socket after successful connection");
         } catch (IOException e) {
             Log.e(TAG, "Could not close the client socket", e);
         }
