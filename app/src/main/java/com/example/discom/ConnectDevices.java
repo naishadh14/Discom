@@ -24,7 +24,7 @@ public class ConnectDevices extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.connect_devices);
-        startServer();
+        startServer(Constants.serverChannel++);
         this.discoveredDevices = (ArrayList<BluetoothDevice>)getIntent().getSerializableExtra("DeviceList");
         TextView text6 = (TextView)findViewById(R.id.textView6);
         text6.append("\n");
@@ -95,7 +95,7 @@ public class ConnectDevices extends AppCompatActivity {
         }
     }
 
-    public void startServer() {
+    public void startServer(final int serverChannel) {
         final TextView text = (TextView)findViewById(R.id.textView6);
         Handler serverHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -108,6 +108,8 @@ public class ConnectDevices extends AppCompatActivity {
                         break;
                     case Constants.SERVER_CREATING_CHANNEL:
                         text.append(Constants.SERVER_CREATING_CHANNEL_TEXT);
+                        text.append("\n");
+                        text.append("Server: Channel number is " + Integer.toString(serverChannel));
                         text.append("\n");
                         break;
                     case Constants.SERVER_CREATING_CHANNEL_FAIL:
@@ -125,6 +127,7 @@ public class ConnectDevices extends AppCompatActivity {
                     case Constants.SERVER_DEVICE_CONNECTED:
                         text.append(Constants.SERVER_DEVICE_CONNECTED_TEXT);
                         text.append("\n");
+                        startServer(Constants.serverChannel++);
                         break;
                     case Constants.SERVER_SOCKET_CLOSED:
                         text.append(Constants.SERVER_SOCKET_CLOSED_TEXT);
@@ -137,7 +140,7 @@ public class ConnectDevices extends AppCompatActivity {
                 }
             }
         };
-        BluetoothServer bluetoothServer = new BluetoothServer(serverHandler);
+        BluetoothServer bluetoothServer = new BluetoothServer(serverHandler, serverChannel);
         bluetoothServer.start();
     }
 

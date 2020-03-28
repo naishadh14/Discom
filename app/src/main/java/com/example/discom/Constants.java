@@ -9,6 +9,8 @@ public final class Constants {
     static final String CHANNEL_1 = "CHANNEL_1";
     static final String CHANNEL_2 = "CHANNEL_2";
 
+    static int serverChannel = 0;
+
     //ints and Strings for server communication across threads
     static final int SERVER_GETTING_ADAPTER = 8500;
     static final String SERVER_GETTING_ADAPTER_TEXT = "Server: Getting adapter";

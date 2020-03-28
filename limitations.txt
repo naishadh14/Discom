@@ -7,3 +7,5 @@ Current list of things that have not been handled -
 5. Status messages are not visible when trying to connect to devices.
 6. Only one RFCOMM channel is supported, so connection occurs if only 2 devices exist in range (including self).
 7. Device does not show up in discovery mode if previously paired (?)
+8. Have to manually grant location permission
+9. Have to manually switch on location

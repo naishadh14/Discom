@@ -13,14 +13,15 @@ public class BluetoothServer extends Thread {
     private BluetoothServerSocket bluetoothServer = null;
     private Handler handler;
 
-    public BluetoothServer(Handler handler) {
+    public BluetoothServer(Handler handler, int channel_num) {
         UUID uuid = UUID.fromString(Constants.MY_UUID_STRING);
         BluetoothServerSocket tmp = null;
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.handler = handler;
+        String channel = "CHANNEL_" + Integer.toString(channel_num);
         sendMessageUp(Constants.SERVER_GETTING_ADAPTER);
         try {
-            tmp = bluetoothAdapter.listenUsingRfcommWithServiceRecord(Constants.CHANNEL_1, uuid);
+            tmp = bluetoothAdapter.listenUsingRfcommWithServiceRecord(channel, uuid);
             sendMessageUp(Constants.SERVER_CREATING_CHANNEL);
             bluetoothServer = tmp;
         } catch (IOException e) {
