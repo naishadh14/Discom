@@ -38,6 +38,10 @@ public class BluetoothClient extends Thread {
             sendMessageUp(Constants.CLIENT_ATTEMPTING_CONNECTION);
             bluetoothSocket.connect();
             sendMessageUp(Constants.CLIENT_CONNECTED);
+            Message msg = new Message();
+            msg.what = Constants.DEFAULT;
+            msg.obj = this.bluetoothDevice;
+            handler.sendMessage(msg);
         } catch (IOException e) {
             sendMessageUp(Constants.CLIENT_CONNECTION_FAIL);
             try {

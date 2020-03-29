@@ -42,6 +42,10 @@ public class BluetoothServer extends Thread {
             if(socket != null) {
                 //manage socket in separate thread
                 sendMessageUp(Constants.SERVER_DEVICE_CONNECTED);
+                Message msg = new Message();
+                msg.what = Constants.DEFAULT;
+                msg.obj = socket.getRemoteDevice();
+                handler.sendMessage(msg);
                 //close the socket, since only one connection per socket
                 try {
                     bluetoothServer.close();

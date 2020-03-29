@@ -19,6 +19,8 @@
         </activity>
         <activity android:name=".ConnectDevices">
         </activity>
+        <activity android:name=".ConfirmNumber">
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

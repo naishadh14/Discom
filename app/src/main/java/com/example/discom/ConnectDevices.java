@@ -18,7 +18,7 @@ import java.util.ArrayList;
 
 public class ConnectDevices extends AppCompatActivity {
 
-    ArrayList<BluetoothDevice> discoveredDevices;
+    ArrayList<BluetoothDevice> discoveredDevices, pairedDevices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,8 +26,11 @@ public class ConnectDevices extends AppCompatActivity {
         setContentView(R.layout.connect_devices);
         startServer(Constants.serverChannel++);
         this.discoveredDevices = (ArrayList<BluetoothDevice>)getIntent().getSerializableExtra("DeviceList");
+        this.pairedDevices = new ArrayList<BluetoothDevice>();
         TextView text6 = (TextView)findViewById(R.id.textView6);
         text6.append("\n");
+        TextView text7 = (TextView)findViewById(R.id.textView7);
+        text7.append("\n");
         TextView text = (TextView)findViewById(R.id.textView5);
         if(this.discoveredDevices == null)
             text.append("Null list received");
@@ -87,6 +90,12 @@ public class ConnectDevices extends AppCompatActivity {
                           text.append(Constants.CLIENT_CLOSING_SOCKET_TEXT);
                           text.append("\n");
                           break;
+                      default:
+                          BluetoothDevice device = (BluetoothDevice) msg.obj;
+                          text.append("Client: Connected to " + device.getName());
+                          text.append("\n");
+                          createPairedList(device);
+                          break;
                   }
               }
             };
@@ -137,11 +146,22 @@ public class ConnectDevices extends AppCompatActivity {
                         text.append(Constants.SERVER_SOCKET_CLOSE_FAIL_TEXT);
                         text.append("\n");
                         break;
+                    default:
+                        BluetoothDevice device = (BluetoothDevice) msg.obj;
+                        text.append("Server: Connected to " + device.getName());
+                        text.append("\n");
+                        createPairedList(device);
+                        break;
                 }
             }
         };
         BluetoothServer bluetoothServer = new BluetoothServer(serverHandler, serverChannel);
         bluetoothServer.start();
+    }
+
+    public void numberConfirmation(View view) {
+        Intent intent = new Intent(this, ConfirmNumber.class);
+        startActivity(intent);
     }
 
     private final BroadcastReceiver deviceConnectedReceiver = new BroadcastReceiver() {
@@ -155,4 +175,39 @@ public class ConnectDevices extends AppCompatActivity {
             }
         }
     };
+
+    public void createPairedList(BluetoothDevice device) {
+        addDeviceToList(device);
+        refreshList();
+    }
+
+    public void addDeviceToList(BluetoothDevice device) {
+        if(!checkDuplicate(device))
+            this.pairedDevices.add(device);
+    }
+
+    public boolean checkDuplicate(BluetoothDevice device) {
+        int len = this.pairedDevices.size();
+        for(int i = 0; i < len; i++) {
+            if(this.pairedDevices.get(i).equals(device))
+                return true;
+        }
+        return false;
+    }
+
+    public void refreshList() {
+        TextView text = (TextView) findViewById(R.id.textView7);
+        text.setText("");
+        int len = this.pairedDevices.size();
+        BluetoothDevice device;
+        for(int i = 0; i < len; i++) {
+            device = pairedDevices.get(i);
+            text.append("Device: ");
+            text.append(device.getName());
+            text.append("\n");
+            text.append("Address: ");
+            text.append(device.getAddress());
+            text.append("\n\n");
+        }
+    }
 }

@@ -9,3 +9,4 @@ Current list of things that have not been handled -
 7. Device does not show up in discovery mode if previously paired (?)
 8. Have to manually grant location permission
 9. Have to manually switch on location
+10. Improve UI when scroll bar has to appear for messages

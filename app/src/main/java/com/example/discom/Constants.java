@@ -45,5 +45,7 @@ public final class Constants {
     static final int CLIENT_CLOSING_SOCKET = 8514;
     static final String CLIENT_CLOSING_SOCKET_TEXT = "Client: Closing socket";
 
+    static final int DEFAULT = 8515;
+
 
 }
