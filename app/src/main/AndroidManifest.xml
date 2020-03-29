@@ -14,24 +14,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".PairedDevices"
-            android:parentActivityName=".ModifyBluetooth">
-        </activity>
-        <activity android:name=".ConnectDevices">
-        </activity>
-        <activity android:name=".ConfirmNumber">
-        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".ConnectDevices">
+        </activity>
+        <activity android:name=".ConfirmNumber">
+        </activity>
+        <activity android:name=".DeviceDiscovery">
             <intent-filter>
                 <action android:name="android.bluetooth.adapter.action.STATE_CHANGED" />
             </intent-filter>
-        </activity>
-        <activity android:name=".ModifyBluetooth">
         </activity>
     </application>
 

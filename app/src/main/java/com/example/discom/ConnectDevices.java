@@ -159,9 +159,7 @@ public class ConnectDevices extends AppCompatActivity {
         bluetoothServer.start();
     }
 
-    public void numberConfirmation(View view) {
-        Intent intent = new Intent(this, ConfirmNumber.class);
-        startActivity(intent);
+    public void startTextingInterface(View view) {
     }
 
     private final BroadcastReceiver deviceConnectedReceiver = new BroadcastReceiver() {
