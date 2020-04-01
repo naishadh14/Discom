@@ -11,6 +11,10 @@ public final class Constants {
 
     static int serverChannel = 0;
 
+    static int MAX_HOPS = 50;
+
+    static int MAX_MESSAGE_SIZE = 4096;
+
     //ints and Strings for server communication across threads
     static final int SERVER_GETTING_ADAPTER = 8500;
     static final String SERVER_GETTING_ADAPTER_TEXT = "Server: Getting adapter";
@@ -45,7 +49,9 @@ public final class Constants {
     static final int CLIENT_CLOSING_SOCKET = 8514;
     static final String CLIENT_CLOSING_SOCKET_TEXT = "Client: Closing socket";
 
-    static final int DEFAULT = 8515;
+    static final int DEVICE_INFO = 8515;
+    static final int SOCKET = 8516;
+    static final int JSON_OBJECT_RECEIVE = 8517;
 
 
 }

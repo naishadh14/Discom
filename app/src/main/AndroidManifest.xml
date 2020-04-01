@@ -21,6 +21,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".TextInterface">
+        </activity>
         <activity android:name=".ConnectDevices">
         </activity>
         <activity android:name=".ConfirmNumber">

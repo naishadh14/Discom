@@ -149,11 +149,13 @@ public class DeviceDiscovery extends AppCompatActivity {
     }
 
     public void NavigateToConnectDevices(View view) {
+        /*
         if(this.discoveredDevices.size() == 0) {
             Toast toast = Toast.makeText(getApplicationContext(), "No devices found!", Toast.LENGTH_SHORT);
             toast.show();
             return;
         }
+        */
         Intent intent = new Intent(this, ConnectDevices.class);
         intent.putExtra("DeviceList", (Serializable) this.discoveredDevices);
         startActivity(intent);

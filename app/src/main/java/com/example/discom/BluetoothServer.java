@@ -5,15 +5,18 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class BluetoothServer extends Thread {
     private BluetoothServerSocket bluetoothServer = null;
     private Handler handler;
+    private BluetoothSocket socket;
 
-    public BluetoothServer(Handler handler, int channel_num) {
+    BluetoothServer(Handler handler, int channel_num) {
         UUID uuid = UUID.fromString(Constants.MY_UUID_STRING);
         BluetoothServerSocket tmp = null;
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -35,31 +38,40 @@ public class BluetoothServer extends Thread {
             try {
                 sendMessageUp(Constants.SERVER_WAITING_DEVICE);
                 socket = bluetoothServer.accept();
+                this.socket = socket;
             } catch (IOException e) {
                 sendMessageUp(Constants.SERVER_ACCEPT_FAIL);
                 break;
             }
             if(socket != null) {
-                //manage socket in separate thread
+                //send notification to handler about device connection
                 sendMessageUp(Constants.SERVER_DEVICE_CONNECTED);
                 Message msg = new Message();
-                msg.what = Constants.DEFAULT;
+                msg.what = Constants.DEVICE_INFO;
                 msg.obj = socket.getRemoteDevice();
                 handler.sendMessage(msg);
+
+                //manage socket
+                Message msg2 = new Message();
+                msg.what = Constants.SOCKET;
+                msg.obj = socket;
+                handler.sendMessage(msg2);
+
                 //close the socket, since only one connection per socket
                 try {
-                    bluetoothServer.close();
-                    sendMessageUp(Constants.SERVER_SOCKET_CLOSED);
-                } catch (IOException e) {
-                    sendMessageUp(Constants.SERVER_SOCKET_CLOSE_FAIL);
+                    TimeUnit.MILLISECONDS.sleep(100);
+                } catch (InterruptedException e) {
+                    Log.e(Constants.TAG, "Error in sleeping thread");
                 }
+                cancel();
                 break;
             }
         }
     }
 
-    public void cancel() {
+    private void cancel() {
         try {
+            this.socket.close();
             bluetoothServer.close();
         } catch (IOException e) {
             sendMessageUp(Constants.SERVER_SOCKET_CLOSE_FAIL);

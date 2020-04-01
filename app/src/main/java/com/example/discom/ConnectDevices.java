@@ -9,16 +9,21 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ConnectDevices extends AppCompatActivity {
 
     ArrayList<BluetoothDevice> discoveredDevices, pairedDevices;
+    BluetoothServer serverThread;
+    ArrayList<BluetoothClient> clientThread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +95,7 @@ public class ConnectDevices extends AppCompatActivity {
                           text.append(Constants.CLIENT_CLOSING_SOCKET_TEXT);
                           text.append("\n");
                           break;
-                      default:
+                      case Constants.DEVICE_INFO:
                           BluetoothDevice device = (BluetoothDevice) msg.obj;
                           text.append("Client: Connected to " + device.getName());
                           text.append("\n");
@@ -99,8 +104,13 @@ public class ConnectDevices extends AppCompatActivity {
                   }
               }
             };
+            Log.e(Constants.TAG, "About to start Thread");
             BluetoothClient bluetoothClient = new BluetoothClient(this.discoveredDevices.get(i), clientHandler);
+            Log.e(Constants.TAG, "Thread object initialized");
             bluetoothClient.start();
+            Log.e(Constants.TAG, "Thread started successfully");
+            //this.clientThread.add(bluetoothClient);
+            Log.e(Constants.TAG, "Added thread to client list");
         }
     }
 
@@ -146,7 +156,7 @@ public class ConnectDevices extends AppCompatActivity {
                         text.append(Constants.SERVER_SOCKET_CLOSE_FAIL_TEXT);
                         text.append("\n");
                         break;
-                    default:
+                    case Constants.DEVICE_INFO:
                         BluetoothDevice device = (BluetoothDevice) msg.obj;
                         text.append("Server: Connected to " + device.getName());
                         text.append("\n");
@@ -157,9 +167,23 @@ public class ConnectDevices extends AppCompatActivity {
         };
         BluetoothServer bluetoothServer = new BluetoothServer(serverHandler, serverChannel);
         bluetoothServer.start();
+        this.serverThread = bluetoothServer;
     }
 
     public void startTextingInterface(View view) {
+        Toast toast = Toast.makeText(getApplicationContext(), "Closing Threads", Toast.LENGTH_SHORT);
+        toast.show();
+        Log.e(Constants.TAG, "About to close server thread");
+        this.serverThread.interrupt();
+        Log.e(Constants.TAG, "Server thread closed");
+        /*
+        int len = this.clientThread.size();
+        for(int i = 0; i < len; i++)
+            this.clientThread.get(i).interrupt();
+         */
+        Intent intent = new Intent(this, TextInterface.class);
+        intent.putExtra("DeviceList", (Serializable) this.pairedDevices);
+        startActivity(intent);
     }
 
     private final BroadcastReceiver deviceConnectedReceiver = new BroadcastReceiver() {
