@@ -16,8 +16,8 @@ public class BluetoothClient extends Thread {
     private BluetoothDevice bluetoothDevice;
     private Handler handler;
 
-    BluetoothClient(BluetoothDevice device, Handler handler) {
-        UUID uuid = UUID.fromString(Constants.MY_UUID_STRING);
+    BluetoothClient(BluetoothDevice device, Handler handler, String uuidString) {
+        UUID uuid = UUID.fromString(uuidString);
         BluetoothSocket tmp = null;
         bluetoothDevice = device;
         this.handler = handler;
@@ -42,14 +42,14 @@ public class BluetoothClient extends Thread {
 
             //send notification to handler about device connection
             Message msg = new Message();
-            msg.what = Constants.DEVICE_INFO;
+            msg.what = Constants.CLIENT_DEVICE_INFO;
             msg.obj = this.bluetoothDevice;
             handler.sendMessage(msg);
 
             //manage socket
             Message msg2 = new Message();
-            msg.what = Constants.SOCKET;
-            msg.obj = bluetoothSocket;
+            msg2.what = Constants.SOCKET;
+            msg2.obj = bluetoothSocket;
             handler.sendMessage(msg2);
 
         } catch (IOException e) {
@@ -58,6 +58,8 @@ public class BluetoothClient extends Thread {
                 bluetoothSocket.close();
             } catch (IOException ex) {
                 sendMessageUp(Constants.CLIENT_SOCKET_CLOSE_FAIL);
+                cancel();
+                return;
             }
         }
         try {

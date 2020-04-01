@@ -38,7 +38,8 @@ public class TextInterface extends AppCompatActivity {
     }
 
     public void makeMessage(View view) {
-
+        TextView text11 = findViewById(R.id.textView11);
+        text11.setText("");
         //get values from user input
         EditText text = findViewById(R.id.editText2);
         String number_text = text.getText().toString();
@@ -86,74 +87,103 @@ public class TextInterface extends AppCompatActivity {
             Log.e(Constants.TAG, "JSON object construction error");
         }
         String jsonText = jsonObject.toString();
-        TextView text2 = findViewById(R.id.textView11);
-        text2.setText(jsonText);
-        text2.append("\n");
+        text11.setText(jsonText);
+        text11.append("\n");
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             byte[] encodedJSON = Base64.getEncoder().encode(jsonText.getBytes());
-            text2.append(new String(encodedJSON));
-            text2.append("\n");
+            text11.append(new String(encodedJSON));
+            text11.append("\n");
             byte[] decodedJSON = Base64.getDecoder().decode(encodedJSON);
-            text2.append(new String(decodedJSON));
-            text2.append("\n");
+            text11.append(new String(decodedJSON));
+            text11.append("\n");
         }
         else {
             byte[] encodedJSON = android.util.Base64.encode(jsonText.getBytes(), android.util.Base64.DEFAULT);
-            text2.append(new String(encodedJSON));
-            text2.append("\n");
+            text11.append(new String(encodedJSON));
+            text11.append("\n");
             byte[] decodedJSON = android.util.Base64.decode(encodedJSON, android.util.Base64.DEFAULT);
-            text2.append(new String(decodedJSON));
-            text2.append("\n");
+            text11.append(new String(decodedJSON));
+            text11.append("\n");
         }
 
         //Send message out to devices
-        text2.append("Sending message to available paired devices.\n");
+        text11.append("Sending message to available paired devices.\n");
         startClient();
 
     }
 
-    private void startServer(final int serverChannel) {
-        //any socket that comes through server is to be read from
-        final TextView text = findViewById(R.id.textView11);
-        Handler serverHandler = new Handler(Looper.getMainLooper()){
+    public void startServer(final int serverChannel) {
+        final TextView text = (TextView)findViewById(R.id.textView11);
+        Handler serverHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 //handle cases
-                if (msg.what == Constants.SERVER_DEVICE_CONNECTED) {
-                    text.append(Constants.SERVER_DEVICE_CONNECTED_TEXT);
-                    text.append("\n");
-                    startServer(Constants.serverChannel++);
-                } else if (msg.what == Constants.DEVICE_INFO){
-                    BluetoothDevice device = (BluetoothDevice) msg.obj;
-                    text.append("Server: Connected to " + device.getName());
-                    text.append("\n");
-                } else if(msg.what == Constants.SOCKET) {
-                    //receive message from socket
-                    text.append("Receiving message");
-                    BluetoothSocket socket = (BluetoothSocket) msg.obj;
-                    Handler messageHandler = new Handler(Looper.getMainLooper()){
-                      @Override
-                      public void handleMessage(Message msg) {
-                          if(msg.what == Constants.JSON_OBJECT_RECEIVE) {
-                              JSONObject jsonObject = (JSONObject) msg.obj;
-                              text.append("Message received");
-                              text.append(jsonObject.toString());
-                          }
-                      }
-                    };
-                    MessageServer messageServer = new MessageServer(socket, messageHandler);
-                    messageServer.start();
+                switch(msg.what) {
+                    case Constants.SERVER_CREATING_CHANNEL:
+                        text.append(Constants.SERVER_CREATING_CHANNEL_TEXT);
+                        text.append("\n");
+                        text.append("Server: Channel number is " + Integer.toString(serverChannel));
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_CREATING_CHANNEL_FAIL:
+                        text.append(Constants.SERVER_CREATING_CHANNEL_FAIL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_WAITING_DEVICE:
+                        text.append(Constants.SERVER_WAITING_DEVICE_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_ACCEPT_FAIL:
+                        text.append(Constants.SERVER_ACCEPT_FAIL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_DEVICE_CONNECTED:
+                        text.append(Constants.SERVER_DEVICE_CONNECTED_TEXT);
+                        text.append("\n");
+                        startServer(0);
+                        break;
+                    case Constants.SERVER_SOCKET_CLOSED:
+                        text.append(Constants.SERVER_SOCKET_CLOSED_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_SOCKET_CLOSE_FAIL:
+                        text.append(Constants.SERVER_SOCKET_CLOSE_FAIL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.SERVER_DEVICE_INFO:
+                        BluetoothDevice device = (BluetoothDevice) msg.obj;
+                        text.append("Server: Connected to " + device.getName());
+                        text.append("\n");
 
+                        break;
+                    case Constants.SOCKET:
+                        text.append("Receiving message\n");
+                        BluetoothSocket socket = (BluetoothSocket) msg.obj;
+                        Handler messageHandler = new Handler(Looper.getMainLooper()){
+                            @Override
+                            public void handleMessage(Message msg) {
+                                if(msg.what == Constants.JSON_OBJECT_RECEIVE) {
+                                    JSONObject jsonObject = (JSONObject) msg.obj;
+                                    text.append("Message received\n");
+                                    text.append(jsonObject.toString());
+                                    text.append("\n");
+                                }
+                            }
+                        };
+                        MessageServer messageServer = new MessageServer(socket, messageHandler);
+                        messageServer.start();
+                        break;
+                    default:
+                        break;
                 }
             }
         };
-        BluetoothServer bluetoothServer = new BluetoothServer(serverHandler, serverChannel);
+        BluetoothServer bluetoothServer = new BluetoothServer(serverHandler, 0, Constants.UUID_2);
         bluetoothServer.start();
-        text.append("Server: Starting");
     }
 
+
     public void startClient() {
-        //any socket that comes through client is to be sent to
         int len = this.pairedDevices.size();
         final TextView text = (TextView)findViewById(R.id.textView11);
         for(int i = 0; i < len; i++) {
@@ -161,29 +191,53 @@ public class TextInterface extends AppCompatActivity {
                 @Override
                 public void handleMessage(Message msg) {
                     //handle cases
-                    if (msg.what == Constants.CLIENT_CONNECTED) {
-                        text.append(Constants.CLIENT_CONNECTED_TEXT);
-                        text.append("\n");
-                    } else if (msg.what == Constants.DEVICE_INFO) {
-                        BluetoothDevice device = (BluetoothDevice) msg.obj;
-                        text.append("Client: Connected to " + device.getName());
-                        text.append("\n");
-                    } else if(msg.what == Constants.SOCKET) {
-                        //send msg to socket
-                        text.append("Sending message\n");
-                        BluetoothSocket socket = (BluetoothSocket) msg.obj;
-                        MessageClient messageClient = new MessageClient(socket, jsonObject);
-                        messageClient.start();
+                    switch(msg.what) {
+                        case Constants.CLIENT_CREATING_CHANNEL:
+                            text.append(Constants.CLIENT_CREATING_CHANNEL_TEXT);
+                            text.append("\n");
+                            break;
+                        case Constants.CLIENT_CREATING_CHANNEL_FAIL:
+                            text.append(Constants.CLIENT_CREATING_CHANNEL_FAIL_TEXT);
+                            text.append("\n");
+                            break;
+                        case Constants.CLIENT_ATTEMPTING_CONNECTION:
+                            text.append(Constants.CLIENT_ATTEMPTING_CONNECTION_TEXT);
+                            text.append("\n");
+                            break;
+                        case Constants.CLIENT_CONNECTED:
+                            text.append(Constants.CLIENT_CONNECTED_TEXT);
+                            text.append("\n");
+                            break;
+                        case Constants.CLIENT_CONNECTION_FAIL:
+                            text.append(Constants.CLIENT_CONNECTION_FAIL_TEXT);
+                            text.append("\n");
+                            break;
+                        case Constants.CLIENT_SOCKET_CLOSE_FAIL:
+                            text.append(Constants.CLIENT_SOCKET_CLOSE_FAIL_TEXT);
+                            text.append("\n");
+                            break;
+                        case Constants.CLIENT_CLOSING_SOCKET:
+                            text.append(Constants.CLIENT_CLOSING_SOCKET_TEXT);
+                            text.append("\n");
+                            break;
+                        case Constants.CLIENT_DEVICE_INFO:
+                            BluetoothDevice device = (BluetoothDevice) msg.obj;
+                            text.append("Client: Connected to " + device.getName());
+                            text.append("\n");
+                            break;
+                        case Constants.SOCKET:
+                            text.append("Sending message\n");
+                            BluetoothSocket socket = (BluetoothSocket) msg.obj;
+                            MessageClient messageClient = new MessageClient(socket, jsonObject);
+                            messageClient.start();
+                            break;
+                        default:
+                            break;
                     }
                 }
             };
-            BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(i), clientHandler);
+            BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(i), clientHandler, Constants.UUID_2);
             bluetoothClient.start();
-            try {
-                TimeUnit.SECONDS.sleep(3);
-            } catch (InterruptedException e) {
-                Log.e(Constants.TAG, "Thread could not sleep");
-            }
         }
     }
 }

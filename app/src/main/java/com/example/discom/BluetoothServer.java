@@ -16,8 +16,8 @@ public class BluetoothServer extends Thread {
     private Handler handler;
     private BluetoothSocket socket;
 
-    BluetoothServer(Handler handler, int channel_num) {
-        UUID uuid = UUID.fromString(Constants.MY_UUID_STRING);
+    BluetoothServer(Handler handler, int channel_num, String uuidString) {
+        UUID uuid = UUID.fromString(uuidString);
         BluetoothServerSocket tmp = null;
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         this.handler = handler;
@@ -47,14 +47,14 @@ public class BluetoothServer extends Thread {
                 //send notification to handler about device connection
                 sendMessageUp(Constants.SERVER_DEVICE_CONNECTED);
                 Message msg = new Message();
-                msg.what = Constants.DEVICE_INFO;
+                msg.what = Constants.SERVER_DEVICE_INFO;
                 msg.obj = socket.getRemoteDevice();
                 handler.sendMessage(msg);
 
                 //manage socket
                 Message msg2 = new Message();
-                msg.what = Constants.SOCKET;
-                msg.obj = socket;
+                msg2.what = Constants.SOCKET;
+                msg2.obj = socket;
                 handler.sendMessage(msg2);
 
                 //close the socket, since only one connection per socket

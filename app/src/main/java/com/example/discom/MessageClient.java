@@ -24,8 +24,10 @@ public class MessageClient extends Thread {
             String jsonText = jsonObject.toString();
             byte[] encodedJSON = android.util.Base64.encode(jsonText.getBytes(), android.util.Base64.DEFAULT);
             outputStream.write(encodedJSON);
+            Log.e(Constants.TAG, "Client: Message sent successfully");
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error sending JSON to client");
+            return;
         }
         try {
             this.socket.close();

@@ -1,8 +1,9 @@
 package com.example.discom;
 
-public final class Constants {
+final class Constants {
     //Application's UUID
-    static final String MY_UUID_STRING = "48ccdb6c-7bab-45f6-bd68-f7e5fb8d06fe";
+    static final String UUID_1 = "48ccdb6c-7bab-45f6-bd68-f7e5fb8d06fe";
+    static final String UUID_2 = "527be453-f25c-4d12-8cf7-a66001ad9f25";
     //TAG for log messages
     static final String TAG = "DJ@H#BD";
     //Channels for socket connections
@@ -49,9 +50,10 @@ public final class Constants {
     static final int CLIENT_CLOSING_SOCKET = 8514;
     static final String CLIENT_CLOSING_SOCKET_TEXT = "Client: Closing socket";
 
-    static final int DEVICE_INFO = 8515;
-    static final int SOCKET = 8516;
-    static final int JSON_OBJECT_RECEIVE = 8517;
+    static final int SERVER_DEVICE_INFO = 8515;
+    static final int CLIENT_DEVICE_INFO = 8516;
+    static final int SOCKET = 8517;
+    static final int JSON_OBJECT_RECEIVE = 8518;
 
 
 }
