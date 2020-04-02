@@ -11,10 +11,9 @@ final class Constants {
     static final String CHANNEL_2 = "CHANNEL_2";
 
     static int serverChannel = 0;
-
     static int MAX_HOPS = 50;
-
     static int MAX_MESSAGE_SIZE = 4096;
+    static int MAX_RETRY = 3;
 
     //ints and Strings for server communication across threads
     static final int SERVER_GETTING_ADAPTER = 8500;
@@ -57,6 +56,7 @@ final class Constants {
 
     static final int MESSAGE_READ_FAIL = 8519;
     static final int MESSAGE_READ_RETRY = 8520;
+    static final int MESSAGE_ACK = 8521;
 
 
 }

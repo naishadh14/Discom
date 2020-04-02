@@ -46,12 +46,17 @@ public class TextInterface extends AppCompatActivity {
         //get values from user input
         EditText text = findViewById(R.id.editText2);
         String number_text = text.getText().toString();
+        //remove
+        if(number_text.length() == 0)
+            return;
+        /*
         //check for 10 digits
         if(number_text.length() != 10) {
             Toast toast = Toast.makeText(getApplicationContext(), "Phone Number must be 10 digits", Toast.LENGTH_SHORT);
             toast.show();
             return;
         }
+         */
         //check that recipient number is not self number
         SharedPreferences sharedPref = this.getSharedPreferences("MY_SETTINGS", Context.MODE_PRIVATE);
         long selfNumber = sharedPref.getLong("PhoneNumber", 0);
@@ -152,6 +157,7 @@ public class TextInterface extends AppCompatActivity {
                                         text.append("Message received\n");
                                         text.append(jsonObject.toString());
                                         text.append("\n");
+                                        break;
                                     case Constants.MESSAGE_READ_FAIL:
                                         text.append("Error: Message reading failed\n");
                                         break;
@@ -161,7 +167,7 @@ public class TextInterface extends AppCompatActivity {
                                 }
                             }
                         };
-                        MessageServer messageServer = new MessageServer(socket, messageHandler);
+                        MessageServer messageServer = new MessageServer(socket, messageHandler, Constants.MAX_RETRY);
                         messageServer.start();
                         break;
                     default:
@@ -203,7 +209,8 @@ public class TextInterface extends AppCompatActivity {
                         case Constants.SOCKET:
                             text.append("Message sent.\n");
                             BluetoothSocket socket = (BluetoothSocket) msg.obj;
-                            MessageClient messageClient = new MessageClient(socket, jsonObject);
+                            MessageClient messageClient =
+                                    new MessageClient(socket, jsonObject, Constants.MAX_RETRY);
                             messageClient.start();
                             break;
                         default:
@@ -211,7 +218,8 @@ public class TextInterface extends AppCompatActivity {
                     }
                 }
             };
-            BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(i), clientHandler, Constants.UUID_2);
+            BluetoothClient bluetoothClient =
+                    new BluetoothClient(this.pairedDevices.get(i), clientHandler, Constants.UUID_2);
             bluetoothClient.start();
         }
     }
