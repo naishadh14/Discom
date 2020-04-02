@@ -55,5 +55,8 @@ final class Constants {
     static final int SOCKET = 8517;
     static final int JSON_OBJECT_RECEIVE = 8518;
 
+    static final int MESSAGE_READ_FAIL = 8519;
+    static final int MESSAGE_READ_RETRY = 8520;
+
 
 }

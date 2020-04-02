@@ -9,3 +9,5 @@ Current list of things that have not been handled -
 
 High Priority -
 1. Add list of device hops to message JSON.
+2. Message sometimes does not send for no apparent reason. Try ACK messages, and resending a few times.
+3. Add encoding/decoding for previous versions of android as shown in TextInterface.java

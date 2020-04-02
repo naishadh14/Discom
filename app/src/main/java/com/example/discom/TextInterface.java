@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -34,6 +35,8 @@ public class TextInterface extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.text_interface);
         this.pairedDevices = (ArrayList<BluetoothDevice>)getIntent().getSerializableExtra("DeviceList");
+        TextView text = findViewById(R.id.textView11);
+        text.setMovementMethod(new ScrollingMovementMethod());
         startServer(Constants.serverChannel++);
     }
 
@@ -87,8 +90,7 @@ public class TextInterface extends AppCompatActivity {
             Log.e(Constants.TAG, "JSON object construction error");
         }
         String jsonText = jsonObject.toString();
-        text11.setText(jsonText);
-        text11.append("\n");
+        /*
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             byte[] encodedJSON = Base64.getEncoder().encode(jsonText.getBytes());
             text11.append(new String(encodedJSON));
@@ -105,6 +107,7 @@ public class TextInterface extends AppCompatActivity {
             text11.append(new String(decodedJSON));
             text11.append("\n");
         }
+         */
 
         //Send message out to devices
         text11.append("Sending message to available paired devices.\n");
@@ -119,12 +122,6 @@ public class TextInterface extends AppCompatActivity {
             public void handleMessage(Message msg) {
                 //handle cases
                 switch(msg.what) {
-                    case Constants.SERVER_CREATING_CHANNEL:
-                        text.append(Constants.SERVER_CREATING_CHANNEL_TEXT);
-                        text.append("\n");
-                        text.append("Server: Channel number is " + Integer.toString(serverChannel));
-                        text.append("\n");
-                        break;
                     case Constants.SERVER_CREATING_CHANNEL_FAIL:
                         text.append(Constants.SERVER_CREATING_CHANNEL_FAIL_TEXT);
                         text.append("\n");
@@ -137,24 +134,11 @@ public class TextInterface extends AppCompatActivity {
                         text.append(Constants.SERVER_ACCEPT_FAIL_TEXT);
                         text.append("\n");
                         break;
-                    case Constants.SERVER_DEVICE_CONNECTED:
-                        text.append(Constants.SERVER_DEVICE_CONNECTED_TEXT);
-                        text.append("\n");
-                        startServer(0);
-                        break;
-                    case Constants.SERVER_SOCKET_CLOSED:
-                        text.append(Constants.SERVER_SOCKET_CLOSED_TEXT);
-                        text.append("\n");
-                        break;
-                    case Constants.SERVER_SOCKET_CLOSE_FAIL:
-                        text.append(Constants.SERVER_SOCKET_CLOSE_FAIL_TEXT);
-                        text.append("\n");
-                        break;
                     case Constants.SERVER_DEVICE_INFO:
                         BluetoothDevice device = (BluetoothDevice) msg.obj;
                         text.append("Server: Connected to " + device.getName());
                         text.append("\n");
-
+                        startServer(0);
                         break;
                     case Constants.SOCKET:
                         text.append("Receiving message\n");
@@ -162,11 +146,18 @@ public class TextInterface extends AppCompatActivity {
                         Handler messageHandler = new Handler(Looper.getMainLooper()){
                             @Override
                             public void handleMessage(Message msg) {
-                                if(msg.what == Constants.JSON_OBJECT_RECEIVE) {
-                                    JSONObject jsonObject = (JSONObject) msg.obj;
-                                    text.append("Message received\n");
-                                    text.append(jsonObject.toString());
-                                    text.append("\n");
+                                switch (msg.what) {
+                                    case Constants.JSON_OBJECT_RECEIVE:
+                                        JSONObject jsonObject = (JSONObject) msg.obj;
+                                        text.append("Message received\n");
+                                        text.append(jsonObject.toString());
+                                        text.append("\n");
+                                    case Constants.MESSAGE_READ_FAIL:
+                                        text.append("Error: Message reading failed\n");
+                                        break;
+                                    case Constants.MESSAGE_READ_RETRY:
+                                        text.append("Error: Retrying\n");
+                                        break;
                                 }
                             }
                         };
@@ -192,20 +183,8 @@ public class TextInterface extends AppCompatActivity {
                 public void handleMessage(Message msg) {
                     //handle cases
                     switch(msg.what) {
-                        case Constants.CLIENT_CREATING_CHANNEL:
-                            text.append(Constants.CLIENT_CREATING_CHANNEL_TEXT);
-                            text.append("\n");
-                            break;
                         case Constants.CLIENT_CREATING_CHANNEL_FAIL:
                             text.append(Constants.CLIENT_CREATING_CHANNEL_FAIL_TEXT);
-                            text.append("\n");
-                            break;
-                        case Constants.CLIENT_ATTEMPTING_CONNECTION:
-                            text.append(Constants.CLIENT_ATTEMPTING_CONNECTION_TEXT);
-                            text.append("\n");
-                            break;
-                        case Constants.CLIENT_CONNECTED:
-                            text.append(Constants.CLIENT_CONNECTED_TEXT);
                             text.append("\n");
                             break;
                         case Constants.CLIENT_CONNECTION_FAIL:
@@ -216,17 +195,13 @@ public class TextInterface extends AppCompatActivity {
                             text.append(Constants.CLIENT_SOCKET_CLOSE_FAIL_TEXT);
                             text.append("\n");
                             break;
-                        case Constants.CLIENT_CLOSING_SOCKET:
-                            text.append(Constants.CLIENT_CLOSING_SOCKET_TEXT);
-                            text.append("\n");
-                            break;
                         case Constants.CLIENT_DEVICE_INFO:
                             BluetoothDevice device = (BluetoothDevice) msg.obj;
                             text.append("Client: Connected to " + device.getName());
                             text.append("\n");
                             break;
                         case Constants.SOCKET:
-                            text.append("Sending message\n");
+                            text.append("Message sent.\n");
                             BluetoothSocket socket = (BluetoothSocket) msg.obj;
                             MessageClient messageClient = new MessageClient(socket, jsonObject);
                             messageClient.start();
