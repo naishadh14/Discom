@@ -10,69 +10,63 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 public class MessageServer extends Thread {
     private BluetoothSocket socket;
     private Handler handler;
+    private int count;
 
-    MessageServer(BluetoothSocket socket, Handler handler) {
+    MessageServer(BluetoothSocket socket, Handler handler, int count) {
         this.socket = socket;
         this.handler = handler;
+        this.count = count;
     }
 
     public void run() {
+        if(count == 0)
+            return;
         byte[] encodedJSON, decodedJSON;
         JSONObject jsonObject;
         InputStream inputStream;
+        OutputStream outputStream;
 
         //get InputStream or throw error
         try {
             inputStream = this.socket.getInputStream();
             encodedJSON = new byte[Constants.MAX_MESSAGE_SIZE];
         } catch(IOException e) {
-            Log.e(Constants.TAG, "Server: Error getting InputStream");
+            Log.e(Constants.TAG, "MessageServer: Error getting InputStream");
             return;
         }
 
-        //try reading from stream thrice before quitting
+        //try reading from stream
         try {
-            //first try
             inputStream.read(encodedJSON);
-            Log.e(Constants.TAG, "Server: Message successfully read");
-            cancel();
+            Log.e(Constants.TAG, "MessageServer: Message successfully read");
+
+            //send ACK back to client
+            Log.e(Constants.TAG, "MessageServer: Sending ACK");
+            outputStream = this.socket.getOutputStream();
+            outputStream.write(encodedJSON);
+            Log.e(Constants.TAG, "MessageServer: ACK Sent");
         } catch (IOException e) {
-            Log.e(Constants.TAG, "Error reading message #1");
+            Log.e(Constants.TAG, "MessageServer: Error reading message");
             Message msg = new Message();
             msg.what = Constants.MESSAGE_READ_RETRY;
             handler.sendMessage(msg);
 
-            //second try
+            //sleep for 1 second before retrying
             try {
-                pause();
-                inputStream.read(encodedJSON);
-                Log.e(Constants.TAG, "Server: Message successfully read");
-                cancel();
-            } catch (IOException e2) {
-                Log.e(Constants.TAG, "Error reading message #2");
-                msg = new Message();
-                msg.what = Constants.MESSAGE_READ_RETRY;
-                handler.sendMessage(msg);
-
-                //third try
-                try {
-                    pause();
-                    inputStream.read(encodedJSON);
-                    Log.e(Constants.TAG, "Server: Message successfully read");
-                    cancel();
-                } catch (IOException e3) {
-                    Log.e(Constants.TAG, "Error reading message #3");
-                    msg = new Message();
-                    msg.what = Constants.MESSAGE_READ_FAIL;
-                    handler.sendMessage(msg);
-                }
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
             }
+            MessageServer messageServer = new MessageServer(socket, this.handler, this.count - 1);
+            messageServer.start();
+            return;
         }
         cancel();
 
@@ -81,10 +75,10 @@ public class MessageServer extends Thread {
             decodedJSON = android.util.Base64.decode(encodedJSON, android.util.Base64.DEFAULT);
             String jsonText = new String(decodedJSON);
             jsonObject = new JSONObject(jsonText);
-            Log.e(Constants.TAG, "Server: Message successfully decoded");
+            Log.e(Constants.TAG, "MessageServer: Message successfully decoded");
             Log.e(Constants.TAG, jsonText);
         } catch(JSONException e) {
-            Log.e(Constants.TAG, "Error parsing JSON");
+            Log.e(Constants.TAG, "MessageServer: Error parsing JSON");
             return;
         }
 
