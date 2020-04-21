@@ -22,13 +22,12 @@ import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Base64;
-import java.util.concurrent.TimeUnit;
 
 public class TextInterface extends AppCompatActivity {
 
     ArrayList<BluetoothDevice> pairedDevices;
     JSONObject jsonObject;
+    long selfNumber;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +59,7 @@ public class TextInterface extends AppCompatActivity {
         //check that recipient number is not self number
         SharedPreferences sharedPref = this.getSharedPreferences("MY_SETTINGS", Context.MODE_PRIVATE);
         long selfNumber = sharedPref.getLong("PhoneNumber", 0);
+        this.selfNumber = selfNumber;
         String selfNumberText = Long.toString(selfNumber);
         if(selfNumberText.equals(number_text)) {
             Toast toast = Toast.makeText(getApplicationContext(), "Recipient Number cannot be your own number", Toast.LENGTH_SHORT);
@@ -117,7 +117,6 @@ public class TextInterface extends AppCompatActivity {
         //Send message out to devices
         text11.append("Sending message to available paired devices.\n");
         startClient();
-
     }
 
     public void startServer(final int serverChannel) {
@@ -155,8 +154,13 @@ public class TextInterface extends AppCompatActivity {
                                     case Constants.JSON_OBJECT_RECEIVE:
                                         JSONObject jsonObject = (JSONObject) msg.obj;
                                         text.append("Message received\n");
-                                        text.append(jsonObject.toString());
-                                        text.append("\n");
+                                        /*
+                                        try {
+                                            messageResponse(jsonObject);
+                                        } catch (JSONException e) {
+                                            text.append("JSON Error\n");
+                                        }
+                                         */
                                         break;
                                     case Constants.MESSAGE_READ_FAIL:
                                         text.append("Error: Message reading failed\n");
@@ -222,5 +226,13 @@ public class TextInterface extends AppCompatActivity {
                     new BluetoothClient(this.pairedDevices.get(i), clientHandler, Constants.UUID_2);
             bluetoothClient.start();
         }
+    }
+
+    void messageResponse(JSONObject jsonObject) throws JSONException {
+        final TextView text = (TextView)findViewById(R.id.textView11);
+        text.append("Self Number: " + this.selfNumber + "\n");
+        text.append("Target number: " + jsonObject.get("Recipient") + "\n");
+        if(this.selfNumber == (int) jsonObject.get("Recipient"))
+            text.append("Match");
     }
 }

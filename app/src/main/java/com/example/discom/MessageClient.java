@@ -49,6 +49,7 @@ public class MessageClient extends Thread {
             return;
         }
 
+        /*
         //wait for ACK from server, or timeout and run thread again after 2 seconds
         //thread runs maximum of 3 times
         try {
@@ -79,6 +80,7 @@ public class MessageClient extends Thread {
             Log.e(Constants.TAG, "MessageClient: Future Executor error");
         }
 
+
         //decode receivedJSON
         try {
             //for now, assuming that anything received was ACK
@@ -90,6 +92,8 @@ public class MessageClient extends Thread {
         } catch (JSONException e) {
             Log.e(Constants.TAG, "MessageClient: Error parsing JSON");
         }
+        close();
+         */
         close();
     }
 

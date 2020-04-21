@@ -47,17 +47,21 @@ public class MessageServer extends Thread {
             inputStream.read(encodedJSON);
             Log.e(Constants.TAG, "MessageServer: Message successfully read");
 
+            /*
             //send ACK back to client
             Log.e(Constants.TAG, "MessageServer: Sending ACK");
             outputStream = this.socket.getOutputStream();
             outputStream.write(encodedJSON);
             Log.e(Constants.TAG, "MessageServer: ACK Sent");
+             */
         } catch (IOException e) {
             Log.e(Constants.TAG, "MessageServer: Error reading message");
             Message msg = new Message();
-            msg.what = Constants.MESSAGE_READ_RETRY;
+            msg.what = Constants.MESSAGE_READ_FAIL;
             handler.sendMessage(msg);
+            return;
 
+            /*
             //sleep for 1 second before retrying
             try {
                 TimeUnit.SECONDS.sleep(1);
@@ -67,6 +71,7 @@ public class MessageServer extends Thread {
             MessageServer messageServer = new MessageServer(socket, this.handler, this.count - 1);
             messageServer.start();
             return;
+             */
         }
         cancel();
 
