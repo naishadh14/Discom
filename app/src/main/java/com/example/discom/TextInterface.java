@@ -122,7 +122,7 @@ public class TextInterface extends AppCompatActivity {
 
         //Send message out to devices
         text11.append("Sending message to available paired devices.\n");
-        startClient(jsonObject);
+        startClient(jsonObject, 0);
 
     }
 
@@ -213,8 +213,10 @@ public class TextInterface extends AppCompatActivity {
     }
 
 
-    public void startClient(final JSONObject jsonObject) {
+    public void startClient(final JSONObject jsonObject, int count) {
         int len = this.pairedDevices.size();
+        if(count >= len)
+            return;
         final TextView text = findViewById(R.id.textView11);
         for(int i = 0; i < len; i++) {
             Handler clientHandler = new Handler(Looper.getMainLooper()) {
@@ -264,9 +266,20 @@ public class TextInterface extends AppCompatActivity {
                             text.append("\n");
                             break;
                         case Constants.SOCKET:
-                            text.append("Sending message\n");
+                            //text.append("Sending message\n");
                             BluetoothSocket socket = (BluetoothSocket) msg.obj;
-                            MessageClient messageClient = new MessageClient(socket, jsonObject);
+                            Handler messageHandler = new Handler(Looper.getMainLooper()){
+                                @Override
+                                public void handleMessage(Message msg) {
+                                    if(msg.what == Constants.JSON_SEND_FAIL) {
+                                        text.append("Message sending failed\n");
+                                    }
+                                    else {
+                                        text.append("Message sent successfully\n");
+                                    }
+                                }
+                            };
+                            MessageClient messageClient = new MessageClient(socket, jsonObject, messageHandler);
                             messageClient.start();
                             break;
                         default:
@@ -276,12 +289,6 @@ public class TextInterface extends AppCompatActivity {
             };
             BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(i), clientHandler, Constants.UUID_2);
             bluetoothClient.start();
-            try {
-                Thread.sleep(2500);
-                text.append("Slept for 2.5s");
-            } catch (InterruptedException e) {
-                text.append("Error in sleeping thread");
-            }
         }
     }
 
@@ -319,6 +326,6 @@ public class TextInterface extends AppCompatActivity {
         //add check so that it does not broadcast back to original device
         //add lock so that only one copy of startClient is running at any time
         text.append("Broadcasting message back to network\n");
-        startClient(jsonObject);
+        startClient(jsonObject, 0);
     }
 }

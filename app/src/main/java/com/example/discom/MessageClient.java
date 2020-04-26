@@ -1,6 +1,8 @@
 package com.example.discom;
 
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -11,10 +13,12 @@ import java.io.OutputStream;
 public class MessageClient extends Thread {
     private JSONObject jsonObject;
     private BluetoothSocket socket;
+    private Handler handler;
 
-    MessageClient(BluetoothSocket socket, JSONObject jsonObject) {
+    MessageClient(BluetoothSocket socket, JSONObject jsonObject, Handler handler) {
         this.socket = socket;
         this.jsonObject = jsonObject;
+        this.handler = handler;
     }
 
     public void run() {
@@ -27,6 +31,7 @@ public class MessageClient extends Thread {
             Log.e(Constants.TAG, "Client: Message sent successfully");
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error sending JSON to client");
+            sendMessage(Constants.JSON_SEND_FAIL);
             return;
         }
         try {
@@ -34,5 +39,12 @@ public class MessageClient extends Thread {
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error closing socket");
         }
+        sendMessage(Constants.JSON_SENT);
+    }
+
+    private void sendMessage(int ACTION) {
+        Message msg = new Message();
+        msg.what = ACTION;
+        this.handler.sendMessage(msg);
     }
 }

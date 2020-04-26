@@ -54,6 +54,8 @@ final class Constants {
     static final int CLIENT_DEVICE_INFO = 8516;
     static final int SOCKET = 8517;
     static final int JSON_OBJECT_RECEIVE = 8518;
+    static final int JSON_SEND_FAIL = 8519;
+    static final int JSON_SENT = 8520;
 
 
 }
