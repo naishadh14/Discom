@@ -12,9 +12,11 @@ final class Constants {
 
     static int serverChannel = 0;
 
-    static int MAX_HOPS = 50;
+    static int MAX_HOPS = 20;
 
     static int MAX_MESSAGE_SIZE = 4096;
+
+    final static int MAX_ATTEMPTS = 3;
 
     //ints and Strings for server communication across threads
     static final int SERVER_GETTING_ADAPTER = 8500;

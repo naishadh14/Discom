@@ -27,7 +27,8 @@ import java.util.Base64;
 public class TextInterface extends AppCompatActivity {
 
     ArrayList<BluetoothDevice> pairedDevices;
-    ArrayList<Long> ReceivedMessages = new ArrayList<Long>();
+    ArrayList<Long> receivedMessageTimes = new ArrayList<Long>();
+    ArrayList<JSONObject> receivedJSON = new ArrayList<>();
     JSONObject jsonObject;
     long selfNumber;
     boolean startClientBusy = false;
@@ -69,7 +70,7 @@ public class TextInterface extends AppCompatActivity {
         String message = text.getText().toString();
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         long time = timestamp.getTime();
-        this.ReceivedMessages.add(time);
+        this.receivedMessageTimes.add(time);
 
         /*
         Make JSONObject consisting of
@@ -87,7 +88,6 @@ public class TextInterface extends AppCompatActivity {
             jsonObject.put("Recipient", number);
             jsonObject.put("Sender", this.selfNumber);
             jsonObject.put("Message", message);
-            jsonObject.put("MaxHops", Constants.MAX_HOPS);
             jsonObject.put("CurrentHops", 0);
             //make list of bluetooth device for hops list in JSONArray
 
@@ -124,7 +124,7 @@ public class TextInterface extends AppCompatActivity {
 
         //Send message out to devices
         text11.append("Sending message to available paired devices.\n");
-        startClient(jsonObject, 0);
+        startClient(jsonObject, 0, 0);
 
     }
 
@@ -215,9 +215,11 @@ public class TextInterface extends AppCompatActivity {
     }
 
 
-    public void startClient(final JSONObject jsonObject, final int count) {
+    public void startClient(final JSONObject jsonObject, final int deviceNumber, final int attemptNumber) {
         int len = this.pairedDevices.size();
-        if(count >= len)
+        if(deviceNumber >= len)
+            return;
+        if(attemptNumber >= Constants.MAX_ATTEMPTS)
             return;
         final TextView text = findViewById(R.id.textView11);
         Handler clientHandler = new Handler(Looper.getMainLooper()) {
@@ -250,6 +252,7 @@ public class TextInterface extends AppCompatActivity {
                     case Constants.CLIENT_CONNECTION_FAIL:
                         text.append(Constants.CLIENT_CONNECTION_FAIL_TEXT);
                         text.append("\n");
+                        startClient(jsonObject, deviceNumber, attemptNumber + 1);
                         break;
                     case Constants.CLIENT_SOCKET_CLOSE_FAIL:
                         text.append(Constants.CLIENT_SOCKET_CLOSE_FAIL_TEXT);
@@ -274,11 +277,11 @@ public class TextInterface extends AppCompatActivity {
                             public void handleMessage(Message msg) {
                                 if(msg.what == Constants.JSON_SEND_FAIL) {
                                     text.append("Message sending failed\n");
-                                    startClient(jsonObject, count);
+                                    startClient(jsonObject, deviceNumber, attemptNumber + 1);
                                 }
                                 else {
                                     text.append("Message sent successfully\n");
-                                    startClient(jsonObject, count + 1);
+                                    startClient(jsonObject, deviceNumber + 1, 0);
                                 }
                             }
                         };
@@ -290,7 +293,7 @@ public class TextInterface extends AppCompatActivity {
                 }
             }
         };
-        BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(count), clientHandler, Constants.UUID_2);
+        BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(deviceNumber), clientHandler, Constants.UUID_2);
         bluetoothClient.start();
     }
 
@@ -301,25 +304,26 @@ public class TextInterface extends AppCompatActivity {
 
         //make list of timestamps, if msg already received, drop
         long time = (long) jsonObject.get("Timestamp");
-        if(this.ReceivedMessages.contains(time)) {
+        if(this.receivedMessageTimes.contains(time)) {
             text.append("Already received, dropping\n");
             return;
         }
 
         //otherwise, append to list
-        this.ReceivedMessages.add(time);
+        this.receivedMessageTimes.add(time);
 
         //if you are intended recipient, do not broadcast further
         if(Long.toString(number).equals(Long.toString(this.selfNumber))) {
             text.append("You are the intended receipient\n");
             text.append((String) jsonObject.get("Message"));
             text.append("\n");
+            this.receivedJSON.add(jsonObject);
             return;
         }
 
         //if max hops are reached, then drop packet
         int hops = (int) jsonObject.get("CurrentHops");
-        if((int) jsonObject.get("MaxHops") == hops + 1)
+        if(Constants.MAX_HOPS == hops + 1)
             return;
         //otherwise increment current hops by 1
         jsonObject.put("CurrentHops", hops + 1);
@@ -328,6 +332,21 @@ public class TextInterface extends AppCompatActivity {
         //add check so that it does not broadcast back to original device
         //add lock so that only one copy of startClient is running at any time
         text.append("Broadcasting message back to network\n");
-        startClient(jsonObject, 0);
+        startClient(jsonObject, 0, 0);
+    }
+
+    public void showMessages(View view) throws JSONException {
+        TextView text = findViewById(R.id.textView11);
+        text.setText("");
+        int len = this.receivedJSON.size();
+        for(int i = 0; i < len; i++) {
+            JSONObject jsonObject = this.receivedJSON.get(i);
+            text.append("From: ");
+            text.append(Long.toString((Long) jsonObject.get("Sender")));
+            text.append("\n");
+            text.append("Message: ");
+            text.append((String) jsonObject.get("Message"));
+            text.append("\n\n");
+        }
     }
 }
