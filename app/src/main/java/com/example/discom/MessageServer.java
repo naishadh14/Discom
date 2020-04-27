@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 
 public class MessageServer extends Thread {
     private BluetoothSocket socket;
@@ -21,9 +22,13 @@ public class MessageServer extends Thread {
     }
 
     public void run() {
+
         byte[] encodedJSON, decodedJSON;
         JSONObject jsonObject;
         InputStream inputStream;
+        OutputStream outputStream;
+
+        //get InputStream or throw error
         try {
             inputStream = this.socket.getInputStream();
         } catch(IOException e) {
@@ -31,6 +36,8 @@ public class MessageServer extends Thread {
             sendMessage(Constants.JSON_RECEIVE_FAIL);
             return;
         }
+
+        //try reading from stream or throw error
         try {
             encodedJSON = new byte[Constants.MAX_MESSAGE_SIZE];
             inputStream.read(encodedJSON);
@@ -40,6 +47,20 @@ public class MessageServer extends Thread {
             sendMessage(Constants.JSON_RECEIVE_FAIL);
             return;
         }
+
+        //send ACK back to client or throw error
+        try {
+            Log.e(Constants.TAG, "MessageServer: Sending ACK");
+            outputStream = this.socket.getOutputStream();
+            outputStream.write(encodedJSON);
+            Log.e(Constants.TAG, "MessageServer: ACK Sent");
+        } catch(IOException e) {
+            Log.e(Constants.TAG, "MessageServer: Error sending ACK");
+            sendMessage(Constants.JSON_RECEIVE_FAIL);
+            return;
+        }
+
+        //parse JSON or throw error
         try {
             decodedJSON = android.util.Base64.decode(encodedJSON, android.util.Base64.DEFAULT);
             String jsonText = new String(decodedJSON);
@@ -51,6 +72,8 @@ public class MessageServer extends Thread {
             sendMessage(Constants.JSON_RECEIVE_FAIL);
             return;
         }
+
+        //send JSONObject up
         sendMessageWithObject(Constants.JSON_OBJECT_RECEIVE, jsonObject);
         Log.e(Constants.TAG, "Server: Message sent up to main thread");
     }

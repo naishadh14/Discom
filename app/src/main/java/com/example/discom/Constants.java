@@ -16,7 +16,7 @@ final class Constants {
 
     static int MAX_MESSAGE_SIZE = 4096;
 
-    final static int MAX_ATTEMPTS = 3;
+    final static int MAX_ATTEMPTS = 7;
 
     //ints and Strings for server communication across threads
     static final int SERVER_GETTING_ADAPTER = 8500;
