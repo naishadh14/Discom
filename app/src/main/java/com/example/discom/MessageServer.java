@@ -28,6 +28,7 @@ public class MessageServer extends Thread {
             inputStream = this.socket.getInputStream();
         } catch(IOException e) {
             Log.e(Constants.TAG, "Server: Error getting InputStream");
+            sendMessage(Constants.JSON_RECEIVE_FAIL);
             return;
         }
         try {
@@ -36,6 +37,7 @@ public class MessageServer extends Thread {
             Log.e(Constants.TAG, "Server: Message successfully read");
         } catch (IOException e) {
             Log.e(Constants.TAG, "Error reading message");
+            sendMessage(Constants.JSON_RECEIVE_FAIL);
             return;
         }
         try {
@@ -46,12 +48,23 @@ public class MessageServer extends Thread {
             Log.e(Constants.TAG, jsonText);
         } catch(JSONException e) {
             Log.e(Constants.TAG, "Error parsing JSON");
+            sendMessage(Constants.JSON_RECEIVE_FAIL);
             return;
         }
+        sendMessageWithObject(Constants.JSON_OBJECT_RECEIVE, jsonObject);
+        Log.e(Constants.TAG, "Server: Message sent up to main thread");
+    }
+
+    private void sendMessage(int ACTION) {
         Message msg = new Message();
-        msg.what = Constants.JSON_OBJECT_RECEIVE;
+        msg.what = ACTION;
+        this.handler.sendMessage(msg);
+    }
+
+    private void sendMessageWithObject(int ACTION, JSONObject jsonObject) {
+        Message msg = new Message();
+        msg.what = ACTION;
         msg.obj = jsonObject;
         handler.sendMessage(msg);
-        Log.e(Constants.TAG, "Server: Message sent up to main thread");
     }
 }

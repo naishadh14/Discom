@@ -43,7 +43,7 @@ public class TextInterface extends AppCompatActivity {
         TextView text11 = findViewById(R.id.textView11);
         text11.setMovementMethod(new ScrollingMovementMethod());
         text11.append("Self Number: " + this.selfNumber + "\n");
-        startServer(Constants.serverChannel++);
+        startServer();
     }
 
     public void makeMessage(View view) {
@@ -128,7 +128,7 @@ public class TextInterface extends AppCompatActivity {
 
     }
 
-    public void startServer(final int serverChannel) {
+    public void startServer() {
         final TextView text = findViewById(R.id.textView11);
         BluetoothDevice device;
         Handler serverHandler = new Handler(Looper.getMainLooper()) {
@@ -163,7 +163,7 @@ public class TextInterface extends AppCompatActivity {
                         text.append("\n");
 
                          */
-                        startServer(0);
+                        startServer();
                         break;
                     case Constants.SERVER_SOCKET_CLOSED:
                         /*
@@ -182,14 +182,14 @@ public class TextInterface extends AppCompatActivity {
 
                         break;
                     case Constants.SOCKET:
-                        text.append("Receiving message\n");
+                        //text.append("Receiving message\n");
                         BluetoothSocket socket = (BluetoothSocket) msg.obj;
                         Handler messageHandler = new Handler(Looper.getMainLooper()){
                             @Override
                             public void handleMessage(Message msg) {
                                 if(msg.what == Constants.JSON_OBJECT_RECEIVE) {
                                     JSONObject jsonObject = (JSONObject) msg.obj;
-                                    text.append("Message received\n");
+                                    text.append("Message received.\n");
                                     try {
                                         messageResponse(jsonObject);
                                     } catch (JSONException e) {
@@ -199,6 +199,9 @@ public class TextInterface extends AppCompatActivity {
                                     text.append(jsonObject.toString());
                                     text.append("\n");
                                      */
+                                }
+                                else if(msg.what == Constants.JSON_RECEIVE_FAIL) {
+                                    text.append("Error receiving message.\n");
                                 }
                             }
                         };

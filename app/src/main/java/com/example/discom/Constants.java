@@ -58,6 +58,7 @@ final class Constants {
     static final int JSON_OBJECT_RECEIVE = 8518;
     static final int JSON_SEND_FAIL = 8519;
     static final int JSON_SENT = 8520;
+    static final int JSON_RECEIVE_FAIL = 8521;
 
 
 }
