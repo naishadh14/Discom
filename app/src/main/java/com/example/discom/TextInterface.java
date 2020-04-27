@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -39,6 +40,7 @@ public class TextInterface extends AppCompatActivity {
         SharedPreferences sharedPref = this.getSharedPreferences("MY_SETTINGS", Context.MODE_PRIVATE);
         this.selfNumber = sharedPref.getLong("PhoneNumber", 0);
         TextView text11 = findViewById(R.id.textView11);
+        text11.setMovementMethod(new ScrollingMovementMethod());
         text11.append("Self Number: " + this.selfNumber + "\n");
         startServer(Constants.serverChannel++);
     }
@@ -213,83 +215,83 @@ public class TextInterface extends AppCompatActivity {
     }
 
 
-    public void startClient(final JSONObject jsonObject, int count) {
+    public void startClient(final JSONObject jsonObject, final int count) {
         int len = this.pairedDevices.size();
         if(count >= len)
             return;
         final TextView text = findViewById(R.id.textView11);
-        for(int i = 0; i < len; i++) {
-            Handler clientHandler = new Handler(Looper.getMainLooper()) {
-                @Override
-                public void handleMessage(Message msg) {
-                    //handle cases
-                    switch(msg.what) {
-                        case Constants.CLIENT_CREATING_CHANNEL:
-                            /*
-                            text.append(Constants.CLIENT_CREATING_CHANNEL_TEXT);
-                            text.append("\n");
-                             */
-                            break;
-                        case Constants.CLIENT_CREATING_CHANNEL_FAIL:
-                            text.append(Constants.CLIENT_CREATING_CHANNEL_FAIL_TEXT);
-                            text.append("\n");
-                            break;
-                        case Constants.CLIENT_ATTEMPTING_CONNECTION:
-                            /*
-                            text.append(Constants.CLIENT_ATTEMPTING_CONNECTION_TEXT);
-                            text.append("\n");
-                             */
-                            break;
-                        case Constants.CLIENT_CONNECTED:
-                            /*
-                            text.append(Constants.CLIENT_CONNECTED_TEXT);
-                            text.append("\n");
-                             */
-                            break;
-                        case Constants.CLIENT_CONNECTION_FAIL:
-                            text.append(Constants.CLIENT_CONNECTION_FAIL_TEXT);
-                            text.append("\n");
-                            break;
-                        case Constants.CLIENT_SOCKET_CLOSE_FAIL:
-                            text.append(Constants.CLIENT_SOCKET_CLOSE_FAIL_TEXT);
-                            text.append("\n");
-                            break;
-                        case Constants.CLIENT_CLOSING_SOCKET:
-                            /*
-                            text.append(Constants.CLIENT_CLOSING_SOCKET_TEXT);
-                            text.append("\n");
-                             */
-                            break;
-                        case Constants.CLIENT_DEVICE_INFO:
-                            BluetoothDevice device = (BluetoothDevice) msg.obj;
-                            text.append("Client: Connected to " + device.getName());
-                            text.append("\n");
-                            break;
-                        case Constants.SOCKET:
-                            //text.append("Sending message\n");
-                            BluetoothSocket socket = (BluetoothSocket) msg.obj;
-                            Handler messageHandler = new Handler(Looper.getMainLooper()){
-                                @Override
-                                public void handleMessage(Message msg) {
-                                    if(msg.what == Constants.JSON_SEND_FAIL) {
-                                        text.append("Message sending failed\n");
-                                    }
-                                    else {
-                                        text.append("Message sent successfully\n");
-                                    }
+        Handler clientHandler = new Handler(Looper.getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                //handle cases
+                switch(msg.what) {
+                    case Constants.CLIENT_CREATING_CHANNEL:
+                        /*
+                        text.append(Constants.CLIENT_CREATING_CHANNEL_TEXT);
+                        text.append("\n");
+                         */
+                        break;
+                    case Constants.CLIENT_CREATING_CHANNEL_FAIL:
+                        text.append(Constants.CLIENT_CREATING_CHANNEL_FAIL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.CLIENT_ATTEMPTING_CONNECTION:
+                        /*
+                        text.append(Constants.CLIENT_ATTEMPTING_CONNECTION_TEXT);
+                        text.append("\n");
+                         */
+                        break;
+                    case Constants.CLIENT_CONNECTED:
+                        /*
+                        text.append(Constants.CLIENT_CONNECTED_TEXT);
+                        text.append("\n");
+                         */
+                        break;
+                    case Constants.CLIENT_CONNECTION_FAIL:
+                        text.append(Constants.CLIENT_CONNECTION_FAIL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.CLIENT_SOCKET_CLOSE_FAIL:
+                        text.append(Constants.CLIENT_SOCKET_CLOSE_FAIL_TEXT);
+                        text.append("\n");
+                        break;
+                    case Constants.CLIENT_CLOSING_SOCKET:
+                        /*
+                        text.append(Constants.CLIENT_CLOSING_SOCKET_TEXT);
+                        text.append("\n");
+                         */
+                        break;
+                    case Constants.CLIENT_DEVICE_INFO:
+                        BluetoothDevice device = (BluetoothDevice) msg.obj;
+                        text.append("Client: Connected to " + device.getName());
+                        text.append("\n");
+                        break;
+                    case Constants.SOCKET:
+                        //text.append("Sending message\n");
+                        BluetoothSocket socket = (BluetoothSocket) msg.obj;
+                        Handler messageHandler = new Handler(Looper.getMainLooper()){
+                            @Override
+                            public void handleMessage(Message msg) {
+                                if(msg.what == Constants.JSON_SEND_FAIL) {
+                                    text.append("Message sending failed\n");
+                                    startClient(jsonObject, count);
                                 }
-                            };
-                            MessageClient messageClient = new MessageClient(socket, jsonObject, messageHandler);
-                            messageClient.start();
-                            break;
-                        default:
-                            break;
-                    }
+                                else {
+                                    text.append("Message sent successfully\n");
+                                    startClient(jsonObject, count + 1);
+                                }
+                            }
+                        };
+                        MessageClient messageClient = new MessageClient(socket, jsonObject, messageHandler);
+                        messageClient.start();
+                        break;
+                    default:
+                        break;
                 }
-            };
-            BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(i), clientHandler, Constants.UUID_2);
-            bluetoothClient.start();
-        }
+            }
+        };
+        BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(count), clientHandler, Constants.UUID_2);
+        bluetoothClient.start();
     }
 
     void messageResponse(JSONObject jsonObject) throws JSONException {
