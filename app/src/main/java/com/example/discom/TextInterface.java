@@ -224,6 +224,8 @@ public class TextInterface extends AppCompatActivity {
             return;
         if(attemptNumber >= Constants.MAX_ATTEMPTS)
             return;
+        while(startClientBusy);
+        startClientBusy = true;
         final TextView text = findViewById(R.id.textView11);
         Handler clientHandler = new Handler(Looper.getMainLooper()) {
             @Override
@@ -298,6 +300,7 @@ public class TextInterface extends AppCompatActivity {
         };
         BluetoothClient bluetoothClient = new BluetoothClient(this.pairedDevices.get(deviceNumber), clientHandler, Constants.UUID_2);
         bluetoothClient.start();
+        startClientBusy = false;
     }
 
     void messageResponse(JSONObject jsonObject) throws JSONException {
