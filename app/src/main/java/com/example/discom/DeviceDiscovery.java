@@ -15,6 +15,7 @@ import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +30,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.skyfishjy.library.RippleBackground;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -39,21 +41,32 @@ public class DeviceDiscovery extends AppCompatActivity {
     List<BluetoothDevice> discoveredDevices;
     int REQUEST_CHECK_SETTINGS;
     int REQUEST_ENABLE_BT;
+    boolean isRippleOn = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.device_discovery);
         this.discoveredDevices = new ArrayList<BluetoothDevice>();
-        TextView text = (TextView) findViewById(R.id.textView3);
-        text.setMovementMethod(new ScrollingMovementMethod());
-        text.append("\n");
+        final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-        TextView text2 = (TextView) findViewById(R.id.textView4);
-        text2.append("\n");
-
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        final RippleBackground rippleBackground = (RippleBackground)findViewById(R.id.content);
+        ImageView imageView = (ImageView)findViewById(R.id.centerImage);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(isRippleOn) {
+                    rippleBackground.stopRippleAnimation();
+                    cancelDiscovery();
+                }
+                else {
+                    rippleBackground.startRippleAnimation();
+                    startDiscovery();
+                }
+                isRippleOn = !isRippleOn;
+            }
+        });
 
         //Starting experimental code
         IntentFilter bt_state_filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
@@ -78,6 +91,73 @@ public class DeviceDiscovery extends AppCompatActivity {
         if(!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+        }
+    }
+
+    public void startDiscovery() {
+
+        //if location is off, quit discovery and request again
+        if(!isMyLocationOn()) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Please switch on location to continue", Toast.LENGTH_LONG);
+            toast.show();
+            displayLocationSettingsRequest(getApplicationContext());
+            return;
+        }
+
+        //sleep for 1s for any necessary changes in BT state to reflect
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {
+        }
+
+        //if bluetooth is off, quit discovery and request again
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if(!bluetoothAdapter.isEnabled()) {
+            Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            return;
+        }
+
+        //create list of discovered devices from scratch
+        this.discoveredDevices.clear();
+        refreshList();
+
+        //if already discovering, restart the process
+        if(bluetoothAdapter.isDiscovering())
+            bluetoothAdapter.cancelDiscovery();
+        boolean flag = bluetoothAdapter.startDiscovery();
+
+        //if discovery failed to start, show toast message
+        if(!flag) {
+            Toast toast = Toast.makeText(getApplicationContext(), "Discovery failed: Please make sure Bluetooth and Location are on before retrying.", Toast.LENGTH_LONG);
+            toast.show();
+            displayLocationSettingsRequest(getApplicationContext());
+        }
+    }
+
+    public void cancelDiscovery() {
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        bluetoothAdapter.cancelDiscovery();
+    }
+
+    boolean isMyLocationOn() {
+        Context context = getApplicationContext();
+        int locationMode = 0;
+        String locationProviders;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
+            try {
+                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
+            } catch (Settings.SettingNotFoundException e) {
+                e.printStackTrace();
+                return false;
+            }
+
+            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
+
+        } else {
+            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
+            return !TextUtils.isEmpty(locationProviders);
         }
     }
 
@@ -121,27 +201,6 @@ public class DeviceDiscovery extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    boolean isMyLocationOn() {
-        Context context = getApplicationContext();
-        int locationMode = 0;
-        String locationProviders;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){
-            try {
-                locationMode = Settings.Secure.getInt(context.getContentResolver(), Settings.Secure.LOCATION_MODE);
-            } catch (Settings.SettingNotFoundException e) {
-                e.printStackTrace();
-                return false;
-            }
-
-            return locationMode != Settings.Secure.LOCATION_MODE_OFF;
-
-        } else {
-            locationProviders = Settings.Secure.getString(context.getContentResolver(), Settings.Secure.LOCATION_PROVIDERS_ALLOWED);
-            return !TextUtils.isEmpty(locationProviders);
-        }
     }
 
     // Create a BroadcastReceiver for ACTION_STATE_CHANGED.
@@ -309,33 +368,6 @@ public class DeviceDiscovery extends AppCompatActivity {
             return 2;
         }
         return -1;
-    }
-
-    public void startDiscovery(View view) {
-        if(!isMyLocationOn()) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Please switch on location to continue", Toast.LENGTH_LONG);
-            toast.show();
-            displayLocationSettingsRequest(getApplicationContext());
-            return;
-        }
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        this.discoveredDevices.clear();
-        refreshList();
-        TextView text = (TextView)findViewById(R.id.textView3);
-        if(bluetoothAdapter.isDiscovering())
-            bluetoothAdapter.cancelDiscovery();
-        boolean flag = bluetoothAdapter.startDiscovery();
-        if(flag) {
-            text.append("Discovery starting.\n");
-        }
-        else {
-            text.append("Could not start discovery!\n");
-        }
-    }
-
-    public void cancelDiscovery(View view) {
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        bluetoothAdapter.cancelDiscovery();
     }
 
 }
