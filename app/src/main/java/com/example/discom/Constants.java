@@ -1,11 +1,14 @@
 package com.example.discom;
 
 final class Constants {
+
     //Application's UUID
     static final String UUID_1 = "48ccdb6c-7bab-45f6-bd68-f7e5fb8d06fe";
     static final String UUID_2 = "527be453-f25c-4d12-8cf7-a66001ad9f25";
+
     //TAG for log messages
     static final String TAG = "DJ@H#BD";
+
     //Channels for socket connections
     static final String CHANNEL_1 = "CHANNEL_1";
     static final String CHANNEL_2 = "CHANNEL_2";
@@ -13,9 +16,7 @@ final class Constants {
     static int serverChannel = 0;
 
     static int MAX_HOPS = 20;
-
     static int MAX_MESSAGE_SIZE = 4096;
-
     final static int MAX_ATTEMPTS = 7;
 
     //ints and Strings for server communication across threads

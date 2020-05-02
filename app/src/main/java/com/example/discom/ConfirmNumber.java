@@ -18,7 +18,6 @@ import com.google.android.material.textfield.TextInputEditText;
 public class ConfirmNumber extends AppCompatActivity {
 
     SharedPreferences sharedPref;
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +34,16 @@ public class ConfirmNumber extends AppCompatActivity {
 
         //check if location permission enabled
         //if not, ask for permission
-        checkPermissions();
+        Access.checkPermissions(getApplicationContext(), this);
     }
 
     public void confirm(View view) {
 
+        Context context = getApplicationContext();
+
         //make sure app has location permissions, else do not proceed
-        if(!checkPermissions()) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Please grant location access to continue", Toast.LENGTH_SHORT);
+        if(!Access.checkPermissions(context, this)) {
+            Toast toast = Toast.makeText(context, "Please grant location access to continue", Toast.LENGTH_LONG);
             toast.show();
             return;
         }
@@ -53,7 +54,7 @@ public class ConfirmNumber extends AppCompatActivity {
 
         //show toast message if mobile number entered is not 10 digits
         if (number_text.length() != 10) {
-            Toast toast = Toast.makeText(getApplicationContext(), "Phone Number must be 10 digits", Toast.LENGTH_SHORT);
+            Toast toast = Toast.makeText(context, "Phone Number must be 10 digits", Toast.LENGTH_SHORT);
             toast.show();
             return;
         }
@@ -67,6 +68,8 @@ public class ConfirmNumber extends AppCompatActivity {
         //open next screen
         Intent intent = new Intent(this, DeviceDiscovery.class);
         startActivity(intent);
+
+
     }
 
     public void cancel(View view) {
@@ -74,6 +77,7 @@ public class ConfirmNumber extends AppCompatActivity {
         text.setText("");
     }
 
+    /*
     boolean checkPermissions() {
         //checks if permission already granted
         if (ContextCompat.checkSelfPermission(this,
@@ -89,4 +93,5 @@ public class ConfirmNumber extends AppCompatActivity {
             //already granted
             return true;
     }
+     */
 }

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#fff"
+    android:animateLayoutChanges="true"
     tools:context=".DeviceDiscovery">
 
     <com.skyfishjy.library.RippleBackground
@@ -22,6 +23,7 @@
         app:rb_rippleAmount="4"
         app:rb_scale="6">
 
+
     </com.skyfishjy.library.RippleBackground>
 
     <ImageView
@@ -34,5 +36,53 @@
         app:layout_constraintEnd_toEndOf="@+id/content"
         app:layout_constraintStart_toStartOf="@+id/content"
         app:layout_constraintTop_toTopOf="@+id/content" />
+
+    <ImageView
+        android:id="@+id/sideImage1"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Image of Phone Transmitting"
+        android:src="@drawable/phone_transmission"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/centerImage"
+        app:layout_constraintEnd_toStartOf="@+id/centerImage" />
+
+    <ImageView
+        android:id="@+id/sideImage2"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginBottom="24dp"
+        android:contentDescription="Image of Phone Transmitting"
+        android:src="@drawable/phone_transmission"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/centerImage"
+        app:layout_constraintStart_toEndOf="@+id/centerImage" />
+
+    <ImageView
+        android:id="@+id/sideImage3"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="24dp"
+        android:contentDescription="Image of Phone Transmitting"
+        android:src="@drawable/phone_transmission"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toStartOf="@+id/centerImage"
+        app:layout_constraintTop_toBottomOf="@+id/centerImage" />
+
+    <ImageView
+        android:id="@+id/sideImage4"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:contentDescription="Image of Phone Transmitting"
+        android:src="@drawable/phone_transmission"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/centerImage"
+        app:layout_constraintTop_toBottomOf="@+id/centerImage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
