@@ -53,8 +53,8 @@
         android:id="@+id/sideImage2"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="24dp"
+        android:layout_marginStart="34dp"
+        android:layout_marginBottom="46dp"
         android:contentDescription="Image of Phone Transmitting"
         android:src="@drawable/phone_transmission"
         android:visibility="invisible"
@@ -65,8 +65,8 @@
         android:id="@+id/sideImage3"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginTop="53dp"
+        android:layout_marginEnd="37dp"
         android:contentDescription="Image of Phone Transmitting"
         android:src="@drawable/phone_transmission"
         android:visibility="invisible"
@@ -77,12 +77,22 @@
         android:id="@+id/sideImage4"
         android:layout_width="60dp"
         android:layout_height="60dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="19dp"
         android:contentDescription="Image of Phone Transmitting"
         android:src="@drawable/phone_transmission"
         android:visibility="invisible"
         app:layout_constraintStart_toEndOf="@+id/centerImage"
         app:layout_constraintTop_toBottomOf="@+id/centerImage" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floating_action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_margin="16dp"
+        app:layout_constraintBottom_toBottomOf="@+id/content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:srcCompat="@drawable/plus_icon" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

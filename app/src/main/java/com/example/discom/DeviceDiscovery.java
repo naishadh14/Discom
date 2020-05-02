@@ -6,11 +6,11 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,20 +36,16 @@ public class DeviceDiscovery extends AppCompatActivity {
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Context context = getApplicationContext();
 
-        final RippleBackground rippleBackground = findViewById(R.id.content);
-        ImageView imageView = findViewById(R.id.centerImage);
+        final ImageView imageView = findViewById(R.id.centerImage);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(isRippleOn) {
-                    rippleBackground.stopRippleAnimation();
-                    cancelDiscovery();
+                    stopDiscoveryAndAnimation();
                 }
                 else {
-                    rippleBackground.startRippleAnimation();
-                    startLocalDiscovery();
+                    startDiscoveryAndAnimation();
                 }
-                isRippleOn = !isRippleOn;
             }
         });
 
@@ -57,7 +53,6 @@ public class DeviceDiscovery extends AppCompatActivity {
         IntentFilter bt_state_filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(bt_state_receiver, bt_state_filter);
 
-        /*
         IntentFilter discovery_state_filter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         registerReceiver(discovery_state_receiver, discovery_state_filter);
 
@@ -66,10 +61,12 @@ public class DeviceDiscovery extends AppCompatActivity {
 
         IntentFilter discovery_status_finish = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(discovery_ending, discovery_status_finish);
-         */
 
         IntentFilter device_found = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(device_found_receiver, device_found);
+
+        IntentFilter location_change = new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION);
+        registerReceiver(gpsReceiver, location_change);
 
         if(!Access.isMyLocationOn(context)) {
             Access.displayLocationSettingsRequest(context, this);
@@ -112,7 +109,6 @@ public class DeviceDiscovery extends AppCompatActivity {
         //if not discoverable, request for discovery
         if(checkScanMode() != 2) {
             requestDiscovery();
-            startLocalDiscovery();
             return;
         }
 
@@ -133,9 +129,47 @@ public class DeviceDiscovery extends AppCompatActivity {
         }
     }
 
+    private BroadcastReceiver gpsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().matches(LocationManager.PROVIDERS_CHANGED_ACTION)) {
+                stopDiscoveryAndAnimation();
+            }
+        }
+    };
+
     public void cancelDiscovery() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        bluetoothAdapter.cancelDiscovery();
+        if(bluetoothAdapter.isDiscovering())
+            bluetoothAdapter.cancelDiscovery();
+    }
+
+    void makeCenterImageVisible() {
+        ImageView image = findViewById(R.id.centerImage);
+        image.setVisibility(View.VISIBLE);
+    }
+
+    void makeCenterImageInvisible() {
+        ImageView image = findViewById(R.id.centerImage);
+        image.setVisibility(View.INVISIBLE);
+    }
+
+    void stopDiscoveryAndAnimation() {
+        final RippleBackground rippleBackground = findViewById(R.id.content);
+        rippleBackground.stopRippleAnimation();
+        makeCenterImageVisible();
+        isRippleOn = false;
+        cancelDiscovery();
+    }
+
+    void startDiscoveryAndAnimation() {
+        final RippleBackground rippleBackground = findViewById(R.id.content);
+        rippleBackground.startRippleAnimation();
+        makeCenterImageInvisible();
+        makeSideImageInvisible();
+        this.discoveredDevices.clear();
+        isRippleOn = true;
+        startLocalDiscovery();
     }
 
     // Create a BroadcastReceiver for ACTION_STATE_CHANGED.
@@ -145,6 +179,8 @@ public class DeviceDiscovery extends AppCompatActivity {
             BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
             if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
                 // State has changed
+                stopDiscoveryAndAnimation();
+                //if state is on
                 if(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)
                     == BluetoothAdapter.STATE_ON) {
                     //text.append("Adapter is on.\n");
@@ -167,7 +203,7 @@ public class DeviceDiscovery extends AppCompatActivity {
                 image = findViewById(R.id.sideImage2);
                 break;
             case 3:
-                image = findViewById(R.id.sideImage3);
+                image = findViewById(R.id.sideImage2);
                 break;
             case 4:
                 image = findViewById(R.id.sideImage4);
@@ -178,15 +214,28 @@ public class DeviceDiscovery extends AppCompatActivity {
         image.setVisibility(View.VISIBLE);
     }
 
-    /*
+    void makeSideImageInvisible() {
+        ImageView image;
+        image = findViewById(R.id.sideImage1);
+        image.setVisibility(View.INVISIBLE);
+        image = findViewById(R.id.sideImage2);
+        image.setVisibility(View.INVISIBLE);
+        image = findViewById(R.id.sideImage3);
+        image.setVisibility(View.INVISIBLE);
+        image = findViewById(R.id.sideImage4);
+        image.setVisibility(View.INVISIBLE);
+    }
+
     //Create a BroadcastReceiver for ACTION_SCAN_MODE_CHANGED.
     private final BroadcastReceiver discovery_state_receiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_SCAN_MODE_CHANGED.equals(action)) {
+                stopDiscoveryAndAnimation();
                 // SCAN MODE HAS CHANGED. GET NEW SCAN MODE.
-                TextView text = (TextView) findViewById(R.id.textView3);
+                //TextView text = (TextView) findViewById(R.id.textView3);
                 int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, -1);
+                /*
                 if(mode == BluetoothAdapter.SCAN_MODE_NONE)
                     text.append("Scan mode none.\n");
                 else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE)
@@ -194,38 +243,35 @@ public class DeviceDiscovery extends AppCompatActivity {
                 else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
                     text.append("Scan mode connectable and discoverable.\n");
                 }
+                 */
             }
         }
     };
-     */
 
-    /*
     private final BroadcastReceiver discovery_starting = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                 // SCAN MODE HAS CHANGED. GET NEW SCAN MODE.
-                TextView text = (TextView) findViewById(R.id.textView3);
-                text.append("Discovery process has started.\n");
-                makeButtonInvisible();
+                //TextView text = (TextView) findViewById(R.id.textView3);
+                //text.append("Discovery process has started.\n");
+                //makeButtonInvisible();
             }
         }
     };
-     */
 
-    /*
     private final BroadcastReceiver discovery_ending = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                 // SCAN MODE HAS CHANGED. GET NEW SCAN MODE.
-                TextView text = (TextView) findViewById(R.id.textView3);
-                text.append("Discovery process has finished.\n");
-                makeButtonVisible();
+                //TextView text = (TextView) findViewById(R.id.textView3);
+                //text.append("Discovery process has finished.\n");
+                //makeButtonVisible();
+                stopDiscoveryAndAnimation();
             }
         }
     };
-     */
 
 
     // Create a BroadcastReceiver for ACTION_FOUND.
@@ -289,6 +335,7 @@ public class DeviceDiscovery extends AppCompatActivity {
             this.discoveredDevices.add(device);
     }
 
+    /*
     public void refreshList() {
         TextView text = (TextView) findViewById(R.id.textView4);
         text.setText("");
@@ -304,10 +351,11 @@ public class DeviceDiscovery extends AppCompatActivity {
             text.append("\n\n");
         }
     }
+     */
 
     public void requestDiscovery() {
         Intent discover = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discover.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 3600);
+        discover.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
         startActivity(discover);
     }
 
