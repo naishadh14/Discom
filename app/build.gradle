@@ -29,4 +29,5 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:10.0.1'
     api 'com.google.android.material:material:1.2.0-alpha06'
     implementation 'com.skyfishjy.ripplebackground:library:1.0.1'
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
 }

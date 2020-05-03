@@ -15,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.skyfishjy.library.RippleBackground;
 
 import java.io.Serializable;
@@ -32,6 +33,7 @@ public class DeviceDiscovery extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.device_discovery);
+        setBluetoothIconEnable();
         this.discoveredDevices = new ArrayList<BluetoothDevice>();
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Context context = getApplicationContext();
@@ -159,6 +161,7 @@ public class DeviceDiscovery extends AppCompatActivity {
         rippleBackground.stopRippleAnimation();
         makeCenterImageVisible();
         isRippleOn = false;
+        setBluetoothIconEnable();
         cancelDiscovery();
     }
 
@@ -169,7 +172,32 @@ public class DeviceDiscovery extends AppCompatActivity {
         makeSideImageInvisible();
         this.discoveredDevices.clear();
         isRippleOn = true;
+        setBluetoothIconDisable();
         startLocalDiscovery();
+    }
+
+    void setBluetoothIconDisable() {
+        final FloatingActionButton button = findViewById(R.id.action_a);
+        button.setIcon(R.drawable.ic_bluetooth_disable);
+        button.setOnClickListener(null);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                stopDiscoveryAndAnimation();
+            }
+        });
+    }
+
+    void setBluetoothIconEnable() {
+        final FloatingActionButton button = findViewById(R.id.action_a);
+        button.setIcon(R.drawable.ic_bluetooth_search);
+        button.setOnClickListener(null);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startDiscoveryAndAnimation();
+            }
+        });
     }
 
     // Create a BroadcastReceiver for ACTION_STATE_CHANGED.
