@@ -9,11 +9,12 @@ import android.content.IntentFilter;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.skyfishjy.library.RippleBackground;
@@ -33,11 +34,25 @@ public class DeviceDiscovery extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.device_discovery);
+
+        //set Bluetooth Action Button to start discovery mode
         setBluetoothIconEnable();
-        this.discoveredDevices = new ArrayList<BluetoothDevice>();
+
+        //set OnClickListener for Bluetooth Connection button
+        final FloatingActionButton button = findViewById(R.id.action_b);
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToConnectDevices();
+            }
+        });
+
+        //initializing variables
+        this.discoveredDevices = new ArrayList<>();
         final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         Context context = getApplicationContext();
 
+        //set Center Phone Image's OnClick function
         final ImageView imageView = findViewById(R.id.centerImage);
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,29 +66,29 @@ public class DeviceDiscovery extends AppCompatActivity {
             }
         });
 
-        //Starting experimental code
+        //Registering BroadCast receivers (BCR)
+        //BCR for Changing state of Bluetooth
         IntentFilter bt_state_filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
         registerReceiver(bt_state_receiver, bt_state_filter);
-
+        //BCR for changing scan mode of Bluetooth
         IntentFilter discovery_state_filter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
         registerReceiver(discovery_state_receiver, discovery_state_filter);
-
-        IntentFilter discovery_status_start = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-        registerReceiver(discovery_starting, discovery_status_start);
-
+        //BCR for when discovery finishes
         IntentFilter discovery_status_finish = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(discovery_ending, discovery_status_finish);
-
+        //BCR for when new device is found
         IntentFilter device_found = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(device_found_receiver, device_found);
-
+        //BCR for changing status of location services
         IntentFilter location_change = new IntentFilter(LocationManager.PROVIDERS_CHANGED_ACTION);
         registerReceiver(gpsReceiver, location_change);
 
+        //If location is not on, request
         if(!Access.isMyLocationOn(context)) {
             Access.displayLocationSettingsRequest(context, this);
         }
 
+        //If Bluetooth is not enabled, request
         if(!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
@@ -86,23 +101,19 @@ public class DeviceDiscovery extends AppCompatActivity {
 
         //if location is off, quit discovery and request again
         if(!Access.isMyLocationOn(context)) {
-            Toast toast = Toast.makeText(context, "Please switch on location to continue", Toast.LENGTH_LONG);
+            stopDiscoveryAndAnimation();
+            Toast toast = Toast.makeText(context, "Please switch on Location and retry", Toast.LENGTH_SHORT);
             toast.show();
             Access.displayLocationSettingsRequest(context, this);
             return;
         }
 
-        /*
-        //sleep for 1s for any necessary changes in BT state to reflect
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException ignored) {
-        }
-         */
-
         //if bluetooth is off, quit discovery and request again
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(!bluetoothAdapter.isEnabled()) {
+            stopDiscoveryAndAnimation();
+            Toast toast = Toast.makeText(context, "Please switch on Bluetooth and retry", Toast.LENGTH_SHORT);
+            toast.show();
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
             return;
@@ -110,13 +121,15 @@ public class DeviceDiscovery extends AppCompatActivity {
 
         //if not discoverable, request for discovery
         if(checkScanMode() != 2) {
+            stopDiscoveryAndAnimation();
+            Toast toast = Toast.makeText(context, "Please switch on Discovery and retry", Toast.LENGTH_SHORT);
+            toast.show();
             requestDiscovery();
             return;
         }
 
         //create list of discovered devices from scratch
         this.discoveredDevices.clear();
-        //refreshList();
 
         //if already discovering, restart the process
         if(bluetoothAdapter.isDiscovering())
@@ -131,31 +144,29 @@ public class DeviceDiscovery extends AppCompatActivity {
         }
     }
 
-    private BroadcastReceiver gpsReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().matches(LocationManager.PROVIDERS_CHANGED_ACTION)) {
-                stopDiscoveryAndAnimation();
-            }
-        }
-    };
-
+    //method to stop discovering if discovery is on
     public void cancelDiscovery() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if(bluetoothAdapter.isDiscovering())
             bluetoothAdapter.cancelDiscovery();
     }
 
+
+    //method to make central device image reappear
+    //to be used when discovery process is off
     void makeCenterImageVisible() {
         ImageView image = findViewById(R.id.centerImage);
         image.setVisibility(View.VISIBLE);
     }
 
+    //method to make central device image disappear
+    //to be used when discovery process is on
     void makeCenterImageInvisible() {
         ImageView image = findViewById(R.id.centerImage);
         image.setVisibility(View.INVISIBLE);
     }
 
+    //method to stop discovery process, related animation, and switch icon image
     void stopDiscoveryAndAnimation() {
         final RippleBackground rippleBackground = findViewById(R.id.content);
         rippleBackground.stopRippleAnimation();
@@ -165,6 +176,7 @@ public class DeviceDiscovery extends AppCompatActivity {
         cancelDiscovery();
     }
 
+    //method to start discovery process, related animation, and switch icon image
     void startDiscoveryAndAnimation() {
         final RippleBackground rippleBackground = findViewById(R.id.content);
         rippleBackground.startRippleAnimation();
@@ -176,6 +188,7 @@ public class DeviceDiscovery extends AppCompatActivity {
         startLocalDiscovery();
     }
 
+    //change icon image to disabled, and switch OnClickListener to stop discovery
     void setBluetoothIconDisable() {
         final FloatingActionButton button = findViewById(R.id.action_a);
         button.setIcon(R.drawable.ic_bluetooth_disable);
@@ -188,6 +201,7 @@ public class DeviceDiscovery extends AppCompatActivity {
         });
     }
 
+    //change icon image to searching, and switch OnClickListener to start discovery
     void setBluetoothIconEnable() {
         final FloatingActionButton button = findViewById(R.id.action_a);
         button.setIcon(R.drawable.ic_bluetooth_search);
@@ -200,155 +214,75 @@ public class DeviceDiscovery extends AppCompatActivity {
         });
     }
 
-    // Create a BroadcastReceiver for ACTION_STATE_CHANGED.
-    private final BroadcastReceiver bt_state_receiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
-                // State has changed
-                stopDiscoveryAndAnimation();
-                //if state is on
-                if(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)
-                    == BluetoothAdapter.STATE_ON) {
-                    //text.append("Adapter is on.\n");
-                    int mode = checkScanMode();
-                    if(mode == 0 || mode == 1)
-                        requestDiscovery();
-                }
-            }
-        }
-    };
-
-    void setSidePhoneVisibility() {
+    //method to make side phones visible if new devices are found
+    //during discovery process
+    void setSidePhoneVisibility(String name) {
         int n = this.discoveredDevices.size();
         ImageView image;
+        TextView text;
+        CardView card;
         switch (n) {
             case 1:
                 image = findViewById(R.id.sideImage1);
+                text = findViewById(R.id.sideImageText1);
+                card = findViewById(R.id.card1);
+                card.setVisibility(View.VISIBLE);
                 break;
             case 2:
                 image = findViewById(R.id.sideImage2);
+                text = findViewById(R.id.sideImageText2);
+                card = findViewById(R.id.card2);
+                card.setVisibility(View.VISIBLE);
                 break;
             case 3:
-                image = findViewById(R.id.sideImage2);
+                image = findViewById(R.id.sideImage3);
+                text = findViewById(R.id.sideImageText3);
+                card = findViewById(R.id.card3);
+                card.setVisibility(View.VISIBLE);
                 break;
             case 4:
                 image = findViewById(R.id.sideImage4);
+                text = findViewById(R.id.sideImageText4);
+                card = findViewById(R.id.card4);
+                card.setVisibility(View.VISIBLE);
                 break;
             default:
                 return;
         }
         image.setVisibility(View.VISIBLE);
+        text.setText(name);
     }
 
+    //method to make all side phones invisible
     void makeSideImageInvisible() {
         ImageView image;
+        CardView card;
         image = findViewById(R.id.sideImage1);
         image.setVisibility(View.INVISIBLE);
+        card = findViewById(R.id.card1);
+        card.setVisibility(View.INVISIBLE);
         image = findViewById(R.id.sideImage2);
         image.setVisibility(View.INVISIBLE);
+        card = findViewById(R.id.card2);
+        card.setVisibility(View.INVISIBLE);
         image = findViewById(R.id.sideImage3);
         image.setVisibility(View.INVISIBLE);
+        card = findViewById(R.id.card3);
+        card.setVisibility(View.INVISIBLE);
         image = findViewById(R.id.sideImage4);
         image.setVisibility(View.INVISIBLE);
+        card = findViewById(R.id.card4);
+        card.setVisibility(View.INVISIBLE);
     }
 
-    //Create a BroadcastReceiver for ACTION_SCAN_MODE_CHANGED.
-    private final BroadcastReceiver discovery_state_receiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothAdapter.ACTION_SCAN_MODE_CHANGED.equals(action)) {
-                stopDiscoveryAndAnimation();
-                // SCAN MODE HAS CHANGED. GET NEW SCAN MODE.
-                //TextView text = (TextView) findViewById(R.id.textView3);
-                int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, -1);
-                /*
-                if(mode == BluetoothAdapter.SCAN_MODE_NONE)
-                    text.append("Scan mode none.\n");
-                else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE)
-                    text.append("Scan mode connectable.\n");
-                else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-                    text.append("Scan mode connectable and discoverable.\n");
-                }
-                 */
-            }
-        }
-    };
-
-    private final BroadcastReceiver discovery_starting = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-                // SCAN MODE HAS CHANGED. GET NEW SCAN MODE.
-                //TextView text = (TextView) findViewById(R.id.textView3);
-                //text.append("Discovery process has started.\n");
-                //makeButtonInvisible();
-            }
-        }
-    };
-
-    private final BroadcastReceiver discovery_ending = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                // SCAN MODE HAS CHANGED. GET NEW SCAN MODE.
-                //TextView text = (TextView) findViewById(R.id.textView3);
-                //text.append("Discovery process has finished.\n");
-                //makeButtonVisible();
-                stopDiscoveryAndAnimation();
-            }
-        }
-    };
-
-
-    // Create a BroadcastReceiver for ACTION_FOUND.
-    private final BroadcastReceiver device_found_receiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Discovery has found a device. Get the BluetoothDevice
-                // object and its info from the Intent.
-                //TextView text = (TextView) findViewById(R.id.textView3);
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                String deviceName = device.getName();
-                String deviceHardwareAddress = device.getAddress(); // MAC address
-                createDiscoveryList(device);
-                setSidePhoneVisibility();
-            }
-        }
-    };
-
-    //Make a onDestroy
-
-    public void makeButtonVisible() {
-        Button button = (Button) findViewById(R.id.button3);
-        button.setVisibility(View.VISIBLE);
-    }
-
-    public void makeButtonInvisible() {
-        Button button = (Button) findViewById(R.id.button3);
-        button.setVisibility(View.GONE);
-    }
-
-    public void NavigateToConnectDevices(View view) {
-        /*
-        if(this.discoveredDevices.size() == 0) {
-            Toast toast = Toast.makeText(getApplicationContext(), "No devices found!", Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
-        */
+    //Method to switch to ConnectDevices Activity, and passing the list of discovered devices
+    public void navigateToConnectDevices() {
         Intent intent = new Intent(this, ConnectDevices.class);
         intent.putExtra("DeviceList", (Serializable) this.discoveredDevices);
         startActivity(intent);
     }
 
-    public void createDiscoveryList(BluetoothDevice device) {
-        addDeviceToList(device);
-        //refreshList();
-    }
-
+    //return true if new device already exists in list of found devices
     public boolean checkDuplicate(BluetoothDevice device) {
         int len = this.discoveredDevices.size();
         for(int i = 0; i < len; i++) {
@@ -358,52 +292,94 @@ public class DeviceDiscovery extends AppCompatActivity {
         return false;
     }
 
+    //add new device to list if it is not duplicate
     public void addDeviceToList(BluetoothDevice device) {
         if(!checkDuplicate(device))
             this.discoveredDevices.add(device);
     }
 
-    /*
-    public void refreshList() {
-        TextView text = (TextView) findViewById(R.id.textView4);
-        text.setText("");
-        int len = this.discoveredDevices.size();
-        BluetoothDevice device;
-        for(int i = 0; i < len; i++) {
-            device = discoveredDevices.get(i);
-            text.append("Device: ");
-            text.append(device.getName());
-            text.append("\n");
-            text.append("Address: ");
-            text.append(device.getAddress());
-            text.append("\n\n");
-        }
-    }
-     */
-
+    //method to ask user for making device discoverable
     public void requestDiscovery() {
         Intent discover = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discover.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
         startActivity(discover);
     }
 
+    //method to check current scan mode of device
     public int checkScanMode() {
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        //TextView text = (TextView) findViewById(R.id.textView3);
         int mode = bluetoothAdapter.getScanMode();
-        if(mode == BluetoothAdapter.SCAN_MODE_NONE) {
-            //text.append("Scan mode none.\n");
+        if(mode == BluetoothAdapter.SCAN_MODE_NONE)
             return 0;
-        }
-        else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE) {
-            //text.append("Scan mode connectable.\n");
+        else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE)
             return 1;
-        }
-        else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            //text.append("Scan mode connectable and discoverable.\n");
+        else if(mode == BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE)
             return 2;
-        }
         return -1;
     }
 
+    //check if user switches off location, and stop discovery process
+    private BroadcastReceiver gpsReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().matches(LocationManager.PROVIDERS_CHANGED_ACTION)) {
+                stopDiscoveryAndAnimation();
+            }
+        }
+    };
+
+    //If state of bluetooth adapter is changed, stop discovery process
+    private final BroadcastReceiver bt_state_receiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_STATE_CHANGED.equals(action)) {
+
+                //stop discovery on change, if ongoing
+                stopDiscoveryAndAnimation();
+
+                //if scan mode is connectable, but not discoverable
+                //request permission for discovery
+                if(intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, -1)
+                        == BluetoothAdapter.STATE_ON) {
+                    int mode = checkScanMode();
+                    if(mode == 0 || mode == 1)
+                        requestDiscovery();
+                }
+            }
+        }
+    };
+
+    //If scan mode of bluetooth is changed, stop discovery process
+    private final BroadcastReceiver discovery_state_receiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_SCAN_MODE_CHANGED.equals(action)) {
+                stopDiscoveryAndAnimation();
+            }
+        }
+    };
+
+    //Once discovery process is complete, switch off animations
+    private final BroadcastReceiver discovery_ending = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                stopDiscoveryAndAnimation();
+            }
+        }
+    };
+
+
+    //Once new device is found during discovery process, add it to the list
+    //Also, make side phone visible
+    private final BroadcastReceiver device_found_receiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                addDeviceToList(device);
+                setSidePhoneVisibility(device.getName());
+            }
+        }
+    };
 }

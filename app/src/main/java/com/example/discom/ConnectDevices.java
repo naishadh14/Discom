@@ -28,7 +28,8 @@ public class ConnectDevices extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.connect_devices);
+        setContentView(R.layout.connect_devices_1);
+        /*
         startServer(Constants.serverChannel++);
         this.discoveredDevices = (ArrayList<BluetoothDevice>)getIntent().getSerializableExtra("DeviceList");
         this.pairedDevices = new ArrayList<BluetoothDevice>();
@@ -56,6 +57,7 @@ public class ConnectDevices extends AppCompatActivity {
 
         IntentFilter deviceConnected = new IntentFilter();
         registerReceiver(deviceConnectedReceiver, deviceConnected);
+         */
     }
 
     public void startClient(View view) {

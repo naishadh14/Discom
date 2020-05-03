@@ -39,6 +39,23 @@
         app:layout_constraintStart_toStartOf="@+id/content"
         app:layout_constraintTop_toTopOf="@+id/content" />
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginEnd="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/sideImage1"
+        app:layout_constraintEnd_toStartOf="@+id/centerImage">
+
+        <TextView
+            android:id="@+id/sideImageText1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+    </com.google.android.material.card.MaterialCardView>
+
     <ImageView
         android:id="@+id/sideImage1"
         android:layout_width="60dp"
@@ -50,6 +67,23 @@
         android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/centerImage"
         app:layout_constraintEnd_toStartOf="@+id/centerImage" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginStart="34dp"
+        app:layout_constraintBottom_toTopOf="@+id/sideImage2"
+        app:layout_constraintStart_toEndOf="@+id/centerImage">
+
+        <TextView
+            android:id="@+id/sideImageText2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+    </com.google.android.material.card.MaterialCardView>
 
     <ImageView
         android:id="@+id/sideImage2"
@@ -63,6 +97,23 @@
         app:layout_constraintBottom_toTopOf="@+id/centerImage"
         app:layout_constraintStart_toEndOf="@+id/centerImage" />
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginEnd="37dp"
+        app:layout_constraintBottom_toTopOf="@+id/sideImage3"
+        app:layout_constraintEnd_toStartOf="@+id/centerImage">
+
+        <TextView
+            android:id="@+id/sideImageText3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+    </com.google.android.material.card.MaterialCardView>
+
     <ImageView
         android:id="@+id/sideImage3"
         android:layout_width="60dp"
@@ -74,6 +125,23 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toStartOf="@+id/centerImage"
         app:layout_constraintTop_toBottomOf="@+id/centerImage" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_marginStart="36dp"
+        app:layout_constraintBottom_toTopOf="@+id/sideImage4"
+        app:layout_constraintStart_toEndOf="@+id/centerImage">
+
+        <TextView
+            android:id="@+id/sideImageText4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?attr/textAppearanceHeadline6" />
+
+    </com.google.android.material.card.MaterialCardView>
 
     <ImageView
         android:id="@+id/sideImage4"
@@ -121,7 +189,7 @@
             android:id="@+id/action_b"
             fab:fab_colorNormal="#fff"
             fab:fab_colorPressed="#fff"
-            fab:fab_icon="@drawable/ic_bluetooth_connect"
+            fab:fab_icon="@drawable/ic_arrow_right"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
