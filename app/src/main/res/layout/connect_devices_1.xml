@@ -3,153 +3,373 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:background="#b19cd9">
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
-        android:id="@+id/device_count_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_margin="16dp"
-        android:text="Devices Connected: 0" />
+<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+<!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
+<!--        android:id="@+id/discoveredDeviceCount"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentTop="true"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_margin="8dp"-->
+<!--        android:text="Devices Discovered: 0" />-->
 
+<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+<!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
+<!--        android:id="@+id/connectedDeviceCount"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_centerHorizontal="true"-->
+<!--        android:layout_below="@+id/discoveredDeviceCount"-->
+<!--        android:layout_margin="8dp"-->
+<!--        android:text="Devices Connected: 0" />-->
+
+    <!--Define android:layout_below if adding anything at top-->
     <ScrollView
-        android:id="@+id/scrollView1"
+        android:id="@+id/scrollViewDevices"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/device_count_button">
+        android:layout_height="match_parent"
+        android:padding="36dp">
 
         <LinearLayout
-            android:id="@+id/linearLayout1"
+            android:id="@+id/linearLayoutDevices"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_margin="36dp">
+            android:orientation="vertical">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card"
+                android:id="@+id/cardDevice1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:visibility="gone"
                 app:cardCornerRadius="30dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/colorPrimary">
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal">
 
                     <ImageView
-                        android:src="@drawable/ic_tornado"
+                        android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_width="100dp" />
+                        android:src="@drawable/ic_tornado" />
 
                     <TextView
+                        android:id="@+id/textDevice1"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:gravity="center_horizontal"
-                        android:textColor="#fff"
-                        android:text="OnePlus 3T"
-                        android:textSize="21dp"
                         android:layout_marginTop="20dp"
-                        android:layout_weight="0.5"/>
+                        android:layout_weight="0.5"
+                        android:gravity="center_horizontal"
+                        android:text="OnePlus 3T"
+                        android:textColor="#fff"
+                        android:textSize="21dp" />
 
                     <ImageView
-                        android:src="@drawable/ic_cancel"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        />
+                        android:src="@drawable/ic_red_cancel" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card"
+                android:id="@+id/cardDevice2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:visibility="gone"
                 app:cardCornerRadius="30dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/colorPrimary">
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal">
 
                     <ImageView
-                        android:src="@drawable/ic_tornado"
+                        android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_width="100dp" />
+                        android:src="@drawable/ic_volcano" />
 
                     <TextView
+                        android:id="@+id/textDevice2"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:gravity="center_horizontal"
-                        android:textColor="#fff"
-                        android:text="OnePlus 3T"
-                        android:textSize="21dp"
                         android:layout_marginTop="20dp"
-                        android:layout_weight="0.5"/>
+                        android:layout_weight="0.5"
+                        android:gravity="center_horizontal"
+                        android:text="OnePlus 3T"
+                        android:textColor="#fff"
+                        android:textSize="21dp" />
 
                     <ImageView
-                        android:src="@drawable/ic_tick"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        />
+                        android:src="@drawable/ic_red_cancel" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card"
+                android:id="@+id/cardDevice3"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
+                android:visibility="gone"
                 app:cardCornerRadius="30dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:background="@color/colorPrimary">
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal">
 
                     <ImageView
-                        android:src="@drawable/ic_tornado"
+                        android:layout_width="100dp"
                         android:layout_height="100dp"
-                        android:layout_width="100dp" />
+                        android:src="@drawable/ic_rockslide" />
 
                     <TextView
+                        android:id="@+id/textDevice3"
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent"
-                        android:gravity="center_horizontal"
-                        android:textColor="#fff"
-                        android:text="OnePlus 3T"
-                        android:textSize="21dp"
                         android:layout_marginTop="20dp"
-                        android:layout_weight="0.5"/>
+                        android:layout_weight="0.5"
+                        android:gravity="center_horizontal"
+                        android:text="OnePlus 3T"
+                        android:textColor="#fff"
+                        android:textSize="21dp" />
 
                     <ImageView
-                        android:src="@drawable/ic_circled_tick"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
                         android:layout_margin="10dp"
-                        />
+                        android:src="@drawable/ic_red_cancel" />
 
                 </LinearLayout>
 
             </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDevice4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="30dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/ic_fire" />
+
+                    <TextView
+                        android:id="@+id/textDevice4"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="0.5"
+                        android:gravity="center_horizontal"
+                        android:text="OnePlus 3T"
+                        android:textColor="#fff"
+                        android:textSize="21dp" />
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_red_cancel" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDevice5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="30dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/ic_tsunami" />
+
+                    <TextView
+                        android:id="@+id/textDevice5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="0.5"
+                        android:gravity="center_horizontal"
+                        android:text="OnePlus 3T"
+                        android:textColor="#fff"
+                        android:textSize="21dp" />
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_red_cancel" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDevice6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="30dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/ic_drought" />
+
+                    <TextView
+                        android:id="@+id/textDevice6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="0.5"
+                        android:gravity="center_horizontal"
+                        android:text="OnePlus 3T"
+                        android:textColor="#fff"
+                        android:textSize="21dp" />
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_red_cancel" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardDevice7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="30dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/colorPrimary"
+                    android:orientation="horizontal">
+
+                    <ImageView
+                        android:layout_width="100dp"
+                        android:layout_height="100dp"
+                        android:src="@drawable/ic_blizzard" />
+
+                    <TextView
+                        android:id="@+id/textDevice7"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="20dp"
+                        android:layout_weight="0.5"
+                        android:gravity="center_horizontal"
+                        android:text="OnePlus 3T"
+                        android:textColor="#fff"
+                        android:textSize="21dp" />
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_gravity="center"
+                        android:layout_margin="10dp"
+                        android:src="@drawable/ic_red_cancel" />
+
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
 
 
         </LinearLayout>
 
     </ScrollView>
+
+<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+<!--        android:id="@+id/floating_action_button"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_alignParentEnd="true"-->
+<!--        android:layout_alignParentBottom="true"-->
+<!--        android:layout_marginEnd="16dp"-->
+<!--        app:srcCompat="@drawable/ic_bluetooth_connect" />-->
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions"
+        fab:fab_addButtonColorNormal="#fff"
+        fab:fab_addButtonColorPressed="#fff"
+        fab:fab_addButtonPlusIconColor="#000"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentBottom="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action_a"
+            fab:fab_colorNormal="#fff"
+            fab:fab_colorPressed="#fff"
+            app:fab_icon="@drawable/ic_bluetooth_connect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/action_b"
+            fab:fab_colorNormal="#fff"
+            fab:fab_colorPressed="#fff"
+            fab:fab_icon="@drawable/ic_arrow_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </RelativeLayout>
 <!--<?xml version="1.0" encoding="utf-8"?>-->
