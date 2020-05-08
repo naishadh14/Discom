@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:cardCornerRadius="30dp">
 
                 <LinearLayout
@@ -58,20 +58,43 @@
                         android:layout_height="100dp"
                         android:src="@drawable/ic_tornado" />
 
-                    <TextView
-                        android:id="@+id/textDevice1"
-                        android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
-                        android:layout_weight="0.4"
-                        android:gravity="center_horizontal"
-                        android:text="OnePlus 3T\n00:00:00:00"
-                        android:textColor="#fff"
-                        android:textSize="21dp"
+                    <LinearLayout
                         android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                    <TextView
+                        android:id="@+id/deviceName1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textColor="#fff"
+                        android:gravity="center_horizontal"
+                        android:text="OnePlus 7"
+                        android:layout_weight="0.5"
+                        android:layout_marginTop="10dp"
                         android:autoSizeTextType="uniform"
                         android:autoSizeMinTextSize="12sp"
                         android:autoSizeMaxTextSize="100sp"
-                        android:autoSizeStepGranularity="2sp"/>
+                        android:autoSizeStepGranularity="2sp"
+                        android:maxLines="1"/>
+
+                    <TextView
+                        android:id="@+id/deviceAddress1"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="0.5"
+                        android:textColor="#fff"
+                        android:layout_gravity="center_horizontal"
+                        android:text="00:00:00:00"
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeMaxTextSize="100sp"
+                        android:autoSizeStepGranularity="2sp"
+                        android:maxLines="1"/>
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iconDevice1"
@@ -104,16 +127,43 @@
                         android:layout_height="100dp"
                         android:src="@drawable/ic_volcano" />
 
-                    <TextView
-                        android:id="@+id/textDevice2"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
                         android:layout_weight="0.5"
-                        android:gravity="center_horizontal"
-                        android:text="OnePlus 3T"
-                        android:textColor="#fff"
-                        android:textSize="21dp" />
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/deviceName2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="#fff"
+                            android:gravity="center_horizontal"
+                            android:text="OnePlus 7"
+                            android:layout_weight="0.5"
+                            android:layout_marginTop="10dp"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                        <TextView
+                            android:id="@+id/deviceAddress2"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:textColor="#fff"
+                            android:layout_gravity="center_horizontal"
+                            android:text="00:00:00:00"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iconDevice2"
@@ -146,16 +196,43 @@
                         android:layout_height="100dp"
                         android:src="@drawable/ic_rockslide" />
 
-                    <TextView
-                        android:id="@+id/textDevice3"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
                         android:layout_weight="0.5"
-                        android:gravity="center_horizontal"
-                        android:text="OnePlus 3T"
-                        android:textColor="#fff"
-                        android:textSize="21dp" />
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/deviceName3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="#fff"
+                            android:gravity="center_horizontal"
+                            android:text="OnePlus 7"
+                            android:layout_weight="0.5"
+                            android:layout_marginTop="10dp"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                        <TextView
+                            android:id="@+id/deviceAddress3"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:textColor="#fff"
+                            android:layout_gravity="center_horizontal"
+                            android:text="00:00:00:00"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iconDevice3"
@@ -188,16 +265,43 @@
                         android:layout_height="100dp"
                         android:src="@drawable/ic_fire" />
 
-                    <TextView
-                        android:id="@+id/textDevice4"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
                         android:layout_weight="0.5"
-                        android:gravity="center_horizontal"
-                        android:text="OnePlus 3T"
-                        android:textColor="#fff"
-                        android:textSize="21dp" />
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/deviceName4"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="#fff"
+                            android:gravity="center_horizontal"
+                            android:text="OnePlus 7"
+                            android:layout_weight="0.5"
+                            android:layout_marginTop="10dp"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                        <TextView
+                            android:id="@+id/deviceAddress4"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:textColor="#fff"
+                            android:layout_gravity="center_horizontal"
+                            android:text="00:00:00:00"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iconDevice4"
@@ -230,16 +334,43 @@
                         android:layout_height="100dp"
                         android:src="@drawable/ic_tsunami" />
 
-                    <TextView
-                        android:id="@+id/textDevice5"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
                         android:layout_weight="0.5"
-                        android:gravity="center_horizontal"
-                        android:text="OnePlus 3T"
-                        android:textColor="#fff"
-                        android:textSize="21dp" />
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/deviceName5"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="#fff"
+                            android:gravity="center_horizontal"
+                            android:text="OnePlus 7"
+                            android:layout_weight="0.5"
+                            android:layout_marginTop="10dp"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                        <TextView
+                            android:id="@+id/deviceAddress5"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:textColor="#fff"
+                            android:layout_gravity="center_horizontal"
+                            android:text="00:00:00:00"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iconDevice5"
@@ -272,16 +403,43 @@
                         android:layout_height="100dp"
                         android:src="@drawable/ic_drought" />
 
-                    <TextView
-                        android:id="@+id/textDevice6"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
                         android:layout_weight="0.5"
-                        android:gravity="center_horizontal"
-                        android:text="OnePlus 3T"
-                        android:textColor="#fff"
-                        android:textSize="21dp" />
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/deviceName6"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="#fff"
+                            android:gravity="center_horizontal"
+                            android:text="OnePlus 7"
+                            android:layout_weight="0.5"
+                            android:layout_marginTop="10dp"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                        <TextView
+                            android:id="@+id/deviceAddress6"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:textColor="#fff"
+                            android:layout_gravity="center_horizontal"
+                            android:text="00:00:00:00"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iconDevice6"
@@ -314,16 +472,43 @@
                         android:layout_height="100dp"
                         android:src="@drawable/ic_blizzard" />
 
-                    <TextView
-                        android:id="@+id/textDevice7"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_marginTop="20dp"
                         android:layout_weight="0.5"
-                        android:gravity="center_horizontal"
-                        android:text="OnePlus 3T"
-                        android:textColor="#fff"
-                        android:textSize="21dp" />
+                        android:orientation="vertical"
+                        android:padding="10dp">
+
+                        <TextView
+                            android:id="@+id/deviceName7"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:textColor="#fff"
+                            android:gravity="center_horizontal"
+                            android:text="OnePlus 7"
+                            android:layout_weight="0.5"
+                            android:layout_marginTop="10dp"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                        <TextView
+                            android:id="@+id/deviceAddress7"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_weight="0.5"
+                            android:textColor="#fff"
+                            android:layout_gravity="center_horizontal"
+                            android:text="00:00:00:00"
+                            android:autoSizeTextType="uniform"
+                            android:autoSizeMinTextSize="12sp"
+                            android:autoSizeMaxTextSize="100sp"
+                            android:autoSizeStepGranularity="2sp"
+                            android:maxLines="1"/>
+
+                    </LinearLayout>
 
                     <ImageView
                         android:id="@+id/iconDevice7"

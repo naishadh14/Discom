@@ -53,51 +53,58 @@ public class ConnectDevices extends AppCompatActivity {
                 case 1:
                     cardView = findViewById(R.id.cardDevice1);
                     cardView.setVisibility(View.VISIBLE);
-                    text = findViewById(R.id.textDevice1);
-                    displayText = device.getName() + "\n" + device.getAddress();
-                    text.setText(displayText);
+                    text = findViewById(R.id.deviceName1);
+                    text.setText(device.getName());
+                    text = findViewById(R.id.deviceAddress1);
+                    text.setText(device.getAddress());
                     break;
                 case 2:
                     cardView = findViewById(R.id.cardDevice2);
                     cardView.setVisibility(View.VISIBLE);
-                    text = findViewById(R.id.textDevice2);
-                    displayText = device.getName() + "\n" + device.getAddress();
-                    text.setText(displayText);
+                    text = findViewById(R.id.deviceName2);
+                    text.setText(device.getName());
+                    text = findViewById(R.id.deviceAddress2);
+                    text.setText(device.getAddress());
                     break;
                 case 3:
                     cardView = findViewById(R.id.cardDevice3);
                     cardView.setVisibility(View.VISIBLE);
-                    text = findViewById(R.id.textDevice3);
-                    displayText = device.getName() + "\n" + device.getAddress();
-                    text.setText(displayText);
+                    text = findViewById(R.id.deviceName3);
+                    text.setText(device.getName());
+                    text = findViewById(R.id.deviceAddress3);
+                    text.setText(device.getAddress());
                     break;
                 case 4:
                     cardView = findViewById(R.id.cardDevice4);
                     cardView.setVisibility(View.VISIBLE);
-                    text = findViewById(R.id.textDevice4);
-                    displayText = device.getName() + "\n" + device.getAddress();
-                    text.setText(displayText);
+                    text = findViewById(R.id.deviceName4);
+                    text.setText(device.getName());
+                    text = findViewById(R.id.deviceAddress4);
+                    text.setText(device.getAddress());
                     break;
                 case 5:
                     cardView = findViewById(R.id.cardDevice5);
                     cardView.setVisibility(View.VISIBLE);
-                    text = findViewById(R.id.textDevice5);
-                    displayText = device.getName() + "\n" + device.getAddress();
-                    text.setText(displayText);
+                    text = findViewById(R.id.deviceName5);
+                    text.setText(device.getName());
+                    text = findViewById(R.id.deviceAddress5);
+                    text.setText(device.getAddress());
                     break;
                 case 6:
                     cardView = findViewById(R.id.cardDevice6);
                     cardView.setVisibility(View.VISIBLE);
-                    text = findViewById(R.id.textDevice6);
-                    displayText = device.getName() + "\n" + device.getAddress();
-                    text.setText(displayText);
+                    text = findViewById(R.id.deviceName6);
+                    text.setText(device.getName());
+                    text = findViewById(R.id.deviceAddress6);
+                    text.setText(device.getAddress());
                     break;
                 case 7:
                     cardView = findViewById(R.id.cardDevice7);
                     cardView.setVisibility(View.VISIBLE);
-                    text = findViewById(R.id.textDevice7);
-                    displayText = device.getName() + "\n" + device.getAddress();
-                    text.setText(displayText);
+                    text = findViewById(R.id.deviceName7);
+                    text.setText(device.getName());
+                    text = findViewById(R.id.deviceAddress7);
+                    text.setText(device.getAddress());
                     break;
                 default:
                     break;

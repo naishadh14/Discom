@@ -376,9 +376,14 @@ public class DeviceDiscovery extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                addDeviceToList(device);
-                setSidePhoneVisibility(device.getName());
+                final BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                if(device != null) {
+                    addDeviceToList(device);
+                    if(device.getName() != null)
+                        setSidePhoneVisibility(device.getName());
+                    else
+                        setSidePhoneVisibility("Null");
+                }
             }
         }
     };
