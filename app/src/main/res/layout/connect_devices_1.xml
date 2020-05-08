@@ -6,25 +6,25 @@
     xmlns:fab="http://schemas.android.com/apk/res-auto"
     android:background="#b19cd9">
 
-<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-<!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
-<!--        android:id="@+id/discoveredDeviceCount"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentTop="true"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_margin="8dp"-->
-<!--        android:text="Devices Discovered: 0" />-->
+    <!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+    <!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
+    <!--        android:id="@+id/discoveredDeviceCount"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_alignParentTop="true"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_margin="8dp"-->
+    <!--        android:text="Devices Discovered: 0" />-->
 
-<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-<!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
-<!--        android:id="@+id/connectedDeviceCount"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_centerHorizontal="true"-->
-<!--        android:layout_below="@+id/discoveredDeviceCount"-->
-<!--        android:layout_margin="8dp"-->
-<!--        android:text="Devices Connected: 0" />-->
+    <!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+    <!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
+    <!--        android:id="@+id/connectedDeviceCount"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_centerHorizontal="true"-->
+    <!--        android:layout_below="@+id/discoveredDeviceCount"-->
+    <!--        android:layout_margin="8dp"-->
+    <!--        android:text="Devices Connected: 0" />-->
 
     <!--Define android:layout_below if adding anything at top-->
     <ScrollView
@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:cardCornerRadius="30dp">
 
                 <LinearLayout
@@ -60,16 +60,21 @@
 
                     <TextView
                         android:id="@+id/textDevice1"
-                        android:layout_width="wrap_content"
                         android:layout_height="match_parent"
                         android:layout_marginTop="20dp"
-                        android:layout_weight="0.5"
+                        android:layout_weight="0.4"
                         android:gravity="center_horizontal"
-                        android:text="OnePlus 3T"
+                        android:text="OnePlus 3T\n00:00:00:00"
                         android:textColor="#fff"
-                        android:textSize="21dp" />
+                        android:textSize="21dp"
+                        android:layout_width="0dp"
+                        android:autoSizeTextType="uniform"
+                        android:autoSizeMinTextSize="12sp"
+                        android:autoSizeMaxTextSize="100sp"
+                        android:autoSizeStepGranularity="2sp"/>
 
                     <ImageView
+                        android:id="@+id/iconDevice1"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -111,6 +116,7 @@
                         android:textSize="21dp" />
 
                     <ImageView
+                        android:id="@+id/iconDevice2"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -152,6 +158,7 @@
                         android:textSize="21dp" />
 
                     <ImageView
+                        android:id="@+id/iconDevice3"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -193,6 +200,7 @@
                         android:textSize="21dp" />
 
                     <ImageView
+                        android:id="@+id/iconDevice4"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -234,6 +242,7 @@
                         android:textSize="21dp" />
 
                     <ImageView
+                        android:id="@+id/iconDevice5"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -275,6 +284,7 @@
                         android:textSize="21dp" />
 
                     <ImageView
+                        android:id="@+id/iconDevice6"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -316,6 +326,7 @@
                         android:textSize="21dp" />
 
                     <ImageView
+                        android:id="@+id/iconDevice7"
                         android:layout_width="50dp"
                         android:layout_height="50dp"
                         android:layout_gravity="center"
@@ -332,14 +343,14 @@
 
     </ScrollView>
 
-<!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
-<!--        android:id="@+id/floating_action_button"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_alignParentEnd="true"-->
-<!--        android:layout_alignParentBottom="true"-->
-<!--        android:layout_marginEnd="16dp"-->
-<!--        app:srcCompat="@drawable/ic_bluetooth_connect" />-->
+    <!--    <com.google.android.material.floatingactionbutton.FloatingActionButton-->
+    <!--        android:id="@+id/floating_action_button"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:layout_alignParentEnd="true"-->
+    <!--        android:layout_alignParentBottom="true"-->
+    <!--        android:layout_marginEnd="16dp"-->
+    <!--        app:srcCompat="@drawable/ic_bluetooth_connect" />-->
     <com.getbase.floatingactionbutton.FloatingActionsMenu
         android:id="@+id/multiple_actions"
         fab:fab_addButtonColorNormal="#fff"
@@ -354,40 +365,41 @@
         app:layout_constraintEnd_toEndOf="parent">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_a"
-            fab:fab_colorNormal="#fff"
-            fab:fab_colorPressed="#fff"
-            app:fab_icon="@drawable/ic_bluetooth_connect"
+            android:id="@+id/bluetoothConnect"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:onClick="startClient"
+            fab:fab_colorNormal="#fff"
+            fab:fab_colorPressed="#fff" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_b"
+            android:id="@+id/navigateTexting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="startTextingInterface"
             fab:fab_colorNormal="#fff"
             fab:fab_colorPressed="#fff"
-            fab:fab_icon="@drawable/ic_arrow_right"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            fab:fab_icon="@drawable/ic_arrow_right" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </RelativeLayout>
-<!--<?xml version="1.0" encoding="utf-8"?>-->
-<!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    android:layout_width="fill_parent"-->
-<!--    android:layout_height="fill_parent">-->
-<!--<ScrollView-->
-<!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
-<!--    xmlns:tools="http://schemas.android.com/tools"-->
-<!--    xmlns:fab="http://schemas.android.com/apk/res-auto"-->
-<!--    android:layout_height="match_parent"-->
-<!--    android:layout_width="match_parent">-->
+    <!--<?xml version="1.0" encoding="utf-8"?>-->
+    <!--<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    android:layout_width="fill_parent"-->
+    <!--    android:layout_height="fill_parent">-->
+    <!--<ScrollView-->
+    <!--    xmlns:android="http://schemas.android.com/apk/res/android"-->
+    <!--    xmlns:app="http://schemas.android.com/apk/res-auto"-->
+    <!--    xmlns:tools="http://schemas.android.com/tools"-->
+    <!--    xmlns:fab="http://schemas.android.com/apk/res-auto"-->
+    <!--    android:layout_height="match_parent"-->
+    <!--    android:layout_width="match_parent">-->
 
-<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
-<!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Devices Connected: 0"/>-->
+    <!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+    <!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
+    <!--        android:layout_width="wrap_content"-->
+    <!--        android:layout_height="wrap_content"-->
+    <!--        android:text="Devices Connected: 0"/>-->
 
-<!--</ScrollView>-->
+    <!--</ScrollView>-->

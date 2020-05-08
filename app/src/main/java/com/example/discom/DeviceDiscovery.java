@@ -301,7 +301,7 @@ public class DeviceDiscovery extends AppCompatActivity {
     //method to ask user for making device discoverable
     public void requestDiscovery() {
         Intent discover = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discover.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
+        discover.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 1800);
         startActivity(discover);
     }
 
