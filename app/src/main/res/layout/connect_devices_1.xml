@@ -26,12 +26,49 @@
     <!--        android:layout_margin="8dp"-->
     <!--        android:text="Devices Connected: 0" />-->
 
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/discoveredDeviceCountCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        >
+
+        <TextView
+            android:id="@+id/discoveredDeviceCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="21sp"
+            android:padding="8dp"/>
+
+    </com.google.android.material.card.MaterialCardView>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/pairedDeviceCountCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_below="@+id/discoveredDeviceCountCard"
+        android:layout_centerHorizontal="true"
+        >
+
+        <TextView
+            android:id="@+id/pairedDeviceCount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="21sp"
+            android:text="Paired Devices: 0"
+            android:padding="8dp"/>
+
+    </com.google.android.material.card.MaterialCardView>
+
     <!--Define android:layout_below if adding anything at top-->
     <ScrollView
         android:id="@+id/scrollViewDevices"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:padding="36dp">
+        android:padding="36dp"
+        android:layout_below="@+id/pairedDeviceCountCard">
 
         <LinearLayout
             android:id="@+id/linearLayoutDevices"
