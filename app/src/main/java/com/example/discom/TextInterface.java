@@ -124,7 +124,7 @@ public class TextInterface extends AppCompatActivity {
 
         //Send message out to devices
         text11.append("Sending message to available paired devices.\n");
-        startClient(jsonObject, 0, 0);
+        startClient(jsonObject, 0, 0, null);
 
     }
 
@@ -184,14 +184,16 @@ public class TextInterface extends AppCompatActivity {
                     case Constants.SOCKET:
                         //text.append("Receiving message\n");
                         BluetoothSocket socket = (BluetoothSocket) msg.obj;
+                        final BluetoothDevice receivedDevice = socket.getRemoteDevice();
                         Handler messageHandler = new Handler(Looper.getMainLooper()){
                             @Override
                             public void handleMessage(Message msg) {
                                 if(msg.what == Constants.JSON_OBJECT_RECEIVE) {
                                     JSONObject jsonObject = (JSONObject) msg.obj;
-                                    text.append("Message received.\n");
+                                    String displayText = "Message received from " + receivedDevice.toString() + "\n";
+                                    text.append(displayText);
                                     try {
-                                        messageResponse(jsonObject);
+                                        messageResponse(jsonObject, receivedDevice);
                                     } catch (JSONException e) {
                                         text.append("JSON Exception " + e);
                                     }
@@ -218,15 +220,21 @@ public class TextInterface extends AppCompatActivity {
     }
 
 
-    public void startClient(final JSONObject jsonObject, final int deviceNumber, final int attemptNumber) {
+    public void startClient(final JSONObject jsonObject, final int deviceNumber, final int attemptNumber, final BluetoothDevice ignoreDevice) {
         int len = this.pairedDevices.size();
         if(deviceNumber >= len)
             return;
         if(attemptNumber >= Constants.MAX_ATTEMPTS)
             return;
+        if(ignoreDevice != null && this.pairedDevices.get(deviceNumber).getAddress().equals(ignoreDevice.getAddress())) {
+            startClient(jsonObject, deviceNumber + 1, 0, ignoreDevice);
+            return;
+        }
         while(startClientBusy);
         startClientBusy = true;
         final TextView text = findViewById(R.id.textView11);
+        String displayText = "Sending to " + this.pairedDevices.get(deviceNumber).toString() + "\n";
+        text.append(displayText);
         Handler clientHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
@@ -257,7 +265,7 @@ public class TextInterface extends AppCompatActivity {
                     case Constants.CLIENT_CONNECTION_FAIL:
                         text.append(Constants.CLIENT_CONNECTION_FAIL_TEXT);
                         text.append("\n");
-                        startClient(jsonObject, deviceNumber, attemptNumber + 1);
+                        startClient(jsonObject, deviceNumber, attemptNumber + 1, ignoreDevice);
                         break;
                     case Constants.CLIENT_SOCKET_CLOSE_FAIL:
                         text.append(Constants.CLIENT_SOCKET_CLOSE_FAIL_TEXT);
@@ -282,11 +290,11 @@ public class TextInterface extends AppCompatActivity {
                             public void handleMessage(Message msg) {
                                 if(msg.what == Constants.JSON_SEND_FAIL) {
                                     text.append("Message sending failed\n");
-                                    startClient(jsonObject, deviceNumber, attemptNumber + 1);
+                                    startClient(jsonObject, deviceNumber, attemptNumber + 1, ignoreDevice);
                                 }
                                 else {
                                     text.append("Message sent successfully\n");
-                                    startClient(jsonObject, deviceNumber + 1, 0);
+                                    startClient(jsonObject, deviceNumber + 1, 0, ignoreDevice);
                                 }
                             }
                         };
@@ -303,7 +311,7 @@ public class TextInterface extends AppCompatActivity {
         startClientBusy = false;
     }
 
-    void messageResponse(JSONObject jsonObject) throws JSONException {
+    void messageResponse(JSONObject jsonObject, BluetoothDevice receivedDevice) throws JSONException {
 
         final TextView text = findViewById(R.id.textView11);
         long number = (long) jsonObject.get("Recipient");
@@ -338,7 +346,7 @@ public class TextInterface extends AppCompatActivity {
         //add check so that it does not broadcast back to original device
         //add lock so that only one copy of startClient is running at any time
         text.append("Broadcasting message back to network\n");
-        startClient(jsonObject, 0, 0);
+        startClient(jsonObject, 0, 0, receivedDevice);
     }
 
     public void showMessages(View view) throws JSONException {
