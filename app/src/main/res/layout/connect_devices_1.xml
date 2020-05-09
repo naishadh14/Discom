@@ -4,11 +4,12 @@
     android:layout_height="fill_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:fab="http://schemas.android.com/apk/res-auto"
-    android:background="#b19cd9">
+    android:background="#BDF2D8">
 
     <!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
     <!--        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"-->
     <!--        android:id="@+id/discoveredDeviceCount"-->
+<!--    FFC3B1-->
     <!--        android:layout_width="wrap_content"-->
     <!--        android:layout_height="wrap_content"-->
     <!--        android:layout_alignParentTop="true"-->
@@ -41,7 +42,8 @@
             android:layout_height="wrap_content"
             android:textSize="21sp"
             android:text="Discovered Devices: 0"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:textColor="#000"/>
 
     </com.google.android.material.card.MaterialCardView>
     <com.google.android.material.card.MaterialCardView
@@ -59,7 +61,8 @@
             android:layout_height="wrap_content"
             android:textSize="21sp"
             android:text="Paired Devices: 0"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:textColor="#000"/>
 
     </com.google.android.material.card.MaterialCardView>
 

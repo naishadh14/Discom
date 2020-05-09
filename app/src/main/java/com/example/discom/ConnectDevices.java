@@ -9,11 +9,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -127,6 +125,100 @@ public class ConnectDevices extends AppCompatActivity {
                 default:
                     break;
             }
+        }
+    }
+
+    void handleConnectionSuccess(BluetoothDevice device) {
+        if(this.discoveredDevices.contains(device))
+            setConnectionStatusSuccess();
+        else
+            addServerPairedDeviceCard(device);
+    }
+
+    void addServerPairedDeviceCard(BluetoothDevice device) {
+        int count = this.discoveredDevices.size();
+        CardView cardView;
+        TextView text;
+        ImageView image;
+
+        //set count of paired devices
+        text = findViewById(R.id.pairedDeviceCount);
+        String displayText = "Paired Devices: " + this.pairedDevices.size();
+        text.setText(displayText);
+
+        switch (count + 1) {
+            case 1:
+                cardView = findViewById(R.id.cardDevice1);
+                cardView.setVisibility(View.VISIBLE);
+                text = findViewById(R.id.deviceName1);
+                text.setText(device.getName());
+                text = findViewById(R.id.deviceAddress1);
+                text.setText(device.getAddress());
+                image = findViewById(R.id.iconDevice1);
+                image.setImageResource(R.drawable.ic_green_tick);
+                break;
+            case 2:
+                cardView = findViewById(R.id.cardDevice2);
+                cardView.setVisibility(View.VISIBLE);
+                text = findViewById(R.id.deviceName2);
+                text.setText(device.getName());
+                text = findViewById(R.id.deviceAddress2);
+                text.setText(device.getAddress());
+                image = findViewById(R.id.iconDevice2);
+                image.setImageResource(R.drawable.ic_green_tick);
+                break;
+            case 3:
+                cardView = findViewById(R.id.cardDevice3);
+                cardView.setVisibility(View.VISIBLE);
+                text = findViewById(R.id.deviceName3);
+                text.setText(device.getName());
+                text = findViewById(R.id.deviceAddress3);
+                text.setText(device.getAddress());
+                image = findViewById(R.id.iconDevice3);
+                image.setImageResource(R.drawable.ic_green_tick);
+                break;
+            case 4:
+                cardView = findViewById(R.id.cardDevice4);
+                cardView.setVisibility(View.VISIBLE);
+                text = findViewById(R.id.deviceName4);
+                text.setText(device.getName());
+                text = findViewById(R.id.deviceAddress4);
+                text.setText(device.getAddress());
+                image = findViewById(R.id.iconDevice4);
+                image.setImageResource(R.drawable.ic_green_tick);
+                break;
+            case 5:
+                cardView = findViewById(R.id.cardDevice5);
+                cardView.setVisibility(View.VISIBLE);
+                text = findViewById(R.id.deviceName5);
+                text.setText(device.getName());
+                text = findViewById(R.id.deviceAddress5);
+                text.setText(device.getAddress());
+                image = findViewById(R.id.iconDevice5);
+                image.setImageResource(R.drawable.ic_green_tick);
+                break;
+            case 6:
+                cardView = findViewById(R.id.cardDevice6);
+                cardView.setVisibility(View.VISIBLE);
+                text = findViewById(R.id.deviceName6);
+                text.setText(device.getName());
+                text = findViewById(R.id.deviceAddress6);
+                text.setText(device.getAddress());
+                image = findViewById(R.id.iconDevice6);
+                image.setImageResource(R.drawable.ic_green_tick);
+                break;
+            case 7:
+                cardView = findViewById(R.id.cardDevice7);
+                cardView.setVisibility(View.VISIBLE);
+                text = findViewById(R.id.deviceName7);
+                text.setText(device.getName());
+                text = findViewById(R.id.deviceAddress7);
+                text.setText(device.getAddress());
+                image = findViewById(R.id.iconDevice7);
+                image.setImageResource(R.drawable.ic_green_tick);
+                break;
+            default:
+                break;
         }
     }
 
@@ -391,7 +483,7 @@ public class ConnectDevices extends AppCompatActivity {
                     case Constants.SERVER_DEVICE_INFO:
                         BluetoothDevice device = (BluetoothDevice) msg.obj;
                         addDeviceToList(device);
-                        setConnectionStatusSuccess();
+                        handleConnectionSuccess(device);
                         break;
                 }
             }
