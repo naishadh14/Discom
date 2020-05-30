@@ -28,7 +28,7 @@ public class ConnectDevices extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.connect_devices_1);
+        setContentView(R.layout.connect_devices);
 
         //set Icon and OnClickListener on BT Connect button
         setButtonAvailable();
